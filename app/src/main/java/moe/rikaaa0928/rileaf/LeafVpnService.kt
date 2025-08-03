@@ -43,22 +43,26 @@ class LeafVpnService : VpnService() {
         val builder = Builder()
         builder.addAddress("10.9.28.2", 24)
         builder.addRoute("0.0.0.0", 0)
-        builder.addDnsServer("8.8.8.8")
+//        builder.addDnsServer("8.8.8.8")
         builder.setSession(getString(R.string.app_name))
+//        builder.addAllowedApplication("moe.rikaaa0928.nettest")
         builder.addDisallowedApplication(packageName)
+//        builder.addDisallowedApplication("uniffi.leafuniffi")
         vpnInterface = builder.establish()
     }
 
     private fun runLeaf(socksAddress: String) {
         val fd = vpnInterface?.detachFd()?: return
-        val socksIpPort = socksAddress.replace(":", ", ")
+//        val socksIpPort = socksAddress.replace(":", ", ")
         val configContent = """
             [General]
-            loglevel = trace
-            dns-server = 223.5.5.5
+            loglevel = error
+            logoutput = console
+            dns-server = 8.8.8.8
             tun-fd = ${fd.toLong()}
             [Proxy]
-            Socks = socks, $socksIpPort
+            ROG = rog, 127.0.0.1, 443, password=123
+            [Host]
             """.trimIndent()
         try {
             leafRunWithConfigString(rtId, configContent)
