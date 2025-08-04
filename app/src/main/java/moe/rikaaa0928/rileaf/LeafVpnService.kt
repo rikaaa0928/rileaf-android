@@ -13,30 +13,68 @@ import uniffi.leafuniffi.*
 
 class LeafVpnService : VpnService() {
 
+    companion object {
+        const val ACTION_CONNECT = "moe.rikaaa0928.rileaf.CONNECT"
+        const val ACTION_DISCONNECT = "moe.rikaaa0928.rileaf.DISCONNECT"
+    }
+
     private var vpnInterface: ParcelFileDescriptor? = null
     private var leafThread: Thread? = null
     private val rtId: UShort = 1u
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent != null && ACTION_DISCONNECT.equals(intent.action)) {
+            stopVpnService()
+            return START_NOT_STICKY
+        }
+        startVpnService(intent)
+        return START_STICKY
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
+    override fun onRevoke() {
+        stopVpnService()
+        super.onRevoke()
+    }
+
+    private fun startVpnService(intent: Intent?) {
+        if (vpnInterface != null) {
+            return
+        }
+
         createVpnInterface()
         val socksAddress = intent?.getStringExtra("socks_address") ?: "127.0.0.1:1080"
         leafThread = Thread {
             runLeaf(socksAddress)
         }
         leafThread?.start()
-        return START_STICKY
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    private fun stopVpnService() {
+        if (vpnInterface == null) {
+            return
+        }
+
         try {
-//            leafReload(rtId, "")
             leafShutdown(rtId)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        try {
             vpnInterface?.close()
         } catch (e: Exception) {
             e.printStackTrace()
         }
+        vpnInterface = null
+
         leafThread?.interrupt()
+        leafThread = null
+
+        stopSelf()
     }
 
     private fun createVpnInterface() {

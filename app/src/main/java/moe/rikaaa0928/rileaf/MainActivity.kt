@@ -62,12 +62,14 @@ class MainActivity : ComponentActivity() {
 
     private fun startVpnService(socksAddress: String = "127.0.0.1:1080") {
         val intent = Intent(this, LeafVpnService::class.java)
+        intent.action = "moe.rikaaa0928.rileaf.CONNECT"
         intent.putExtra("socks_address", socksAddress)
         startService(intent)
     }
 
     private fun stopVpnService() {
         val intent = Intent(this, LeafVpnService::class.java)
-        stopService(intent)
+        intent.action = "moe.rikaaa0928.rileaf.DISCONNECT"
+        startService(intent)
     }
 }
