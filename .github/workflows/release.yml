@@ -60,7 +60,8 @@ jobs:
     
     - name: Copy FFI artifacts to Android project
       run: |
-        # Copy JNI libraries
+        # Create directories and copy JNI libraries
+        mkdir -p app/src/main/jniLibs
         cp -r lib-src/leaf/jniLibs/* app/src/main/jniLibs/
         
         # Copy Kotlin bindings
