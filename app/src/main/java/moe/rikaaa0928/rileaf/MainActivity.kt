@@ -7,12 +7,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.viewmodel.compose.viewModel
+import moe.rikaaa0928.rileaf.data.ConfigManager
+import moe.rikaaa0928.rileaf.ui.*
 
 class MainActivity : ComponentActivity() {
 
@@ -26,44 +26,61 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            var socksAddress by remember { mutableStateOf("127.0.0.1:1080") }
-            var isVpnRunning by remember { mutableStateOf(false) }
-
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+            val navController = rememberNavController()
+            val configManager = ConfigManager(this@MainActivity)
+            
+            NavHost(
+                navController = navController,
+                startDestination = "main"
             ) {
-                OutlinedTextField(
-                    value = socksAddress,
-                    onValueChange = { socksAddress = it },
-                    label = { Text("SOCKS5 Address") }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = {
-                    if (isVpnRunning) {
-                        stopVpnService()
-                        isVpnRunning = false
-                    } else {
-                        val intent = VpnService.prepare(this@MainActivity)
-                        if (intent != null) {
-                            vpnPermissionLauncher.launch(intent)
-                        } else {
-                            startVpnService(socksAddress)
-                            isVpnRunning = true
-                        }
-                    }
-                }) {
-                    Text(if (isVpnRunning) "Stop VPN" else "Start VPN")
+                composable("main") {
+                    MainScreen(
+                        configManager = configManager,
+                        onStartVpn = { 
+                            val intent = VpnService.prepare(this@MainActivity)
+                            if (intent != null) {
+                                vpnPermissionLauncher.launch(intent)
+                            } else {
+                                startVpnService()
+                            }
+                        },
+                        onStopVpn = { stopVpnService() },
+                        onNavigateToProxyConfig = { navController.navigate("proxy_config") },
+                        onNavigateToVpnConfig = { navController.navigate("vpn_config") },
+                        onNavigateToAppFilter = { navController.navigate("app_filter") }
+                    )
+                }
+                
+                composable("proxy_config") {
+                    val mainEntry = navController.getBackStackEntry("main")
+                    val mainViewModel: MainViewModel = viewModel(mainEntry) { MainViewModel(configManager) }
+                    ProxyConfigScreen(
+                        configManager = configManager,
+                        isVpnConnected = mainViewModel.isVpnRunning.value,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+                
+                composable("vpn_config") {
+                    VpnConfigScreen(
+                        configManager = configManager,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+                
+                composable("app_filter") {
+                    AppFilterScreen(
+                        configManager = configManager,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
                 }
             }
         }
     }
 
-    private fun startVpnService(socksAddress: String = "127.0.0.1:1080") {
+    private fun startVpnService() {
         val intent = Intent(this, LeafVpnService::class.java)
         intent.action = "moe.rikaaa0928.rileaf.CONNECT"
-        intent.putExtra("socks_address", socksAddress)
         startService(intent)
     }
 
