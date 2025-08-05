@@ -55,6 +55,7 @@ jobs:
         cd lib-src/leaf
         export NDK_HOME=${{ steps.setup-ndk.outputs.ndk-path }}
         ./scripts/build_android_uniffi.sh
+        ls target/release/
       env:
         NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
     
