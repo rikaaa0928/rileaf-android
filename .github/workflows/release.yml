@@ -49,9 +49,6 @@ jobs:
           ~/.gradle/wrapper
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
     
-    - name: Install uniffi-bindgen
-      run: cargo install uniffi_bindgen --version 0.25.0
-    
     - name: Build Rust FFI libraries
       run: |
         cd lib-src/leaf
