@@ -66,6 +66,7 @@ jobs:
         
         # Copy Kotlin bindings
         mkdir -p app/src/main/java/uniffi
+        ls lib-src/leaf
         cp -r lib-src/leaf/kotlin/* app/src/main/java/
     
     - name: Build release APK
