@@ -65,16 +65,7 @@ jobs:
         mkdir -p app/src/main/jniLibs
         cp -r lib-src/leaf/jniLibs/* app/src/main/jniLibs/
         
-        # Copy Kotlin bindings
-        # mkdir -p app/src/main/java/uniffi
-        ls lib-src/leaf
-        echo "====="
-        ls lib-src/leaf/kotlin
-        echo "====="
-        ls app/src/main/java
-        echo "====="
-        rm -rf app/src/main/java/uniffi
-        cp -r lib-src/leaf/kotlin/* app/src/main/java/
+        # cp -r lib-src/leaf/kotlin/* app/src/main/java/
     
     - name: Build release APK
       run: ./gradlew assembleRelease
