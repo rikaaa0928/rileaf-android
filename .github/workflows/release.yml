@@ -4,7 +4,8 @@ on:
   push:
     tags:
       - 'v*'
-
+permissions:
+  contents: write
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -97,5 +98,3 @@ jobs:
         files: |
           ${{ steps.sign_app.outputs.signedReleaseFile }}
         generate_release_notes: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
