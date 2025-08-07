@@ -65,6 +65,7 @@ jobs:
         mkdir -p app/src/main/jniLibs
         cp -r lib-src/leaf/jniLibs/* app/src/main/jniLibs/
         
+        ls lib-src/leaf/kotlin/
         # cp -r lib-src/leaf/kotlin/* app/src/main/java/
     
     - name: Build release APK
