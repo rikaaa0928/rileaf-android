@@ -23,6 +23,7 @@
 -keep, includedescriptorclasses class org.rustls.platformverifier.** { *; }
 
 -keep class uniffi.** { *; }
+-keep class moe.rikaaa0928.** { *; }
 -keep class com.sun.jna.** { *; }
 -keep class java.awt.Component { *; }
 -keep class java.awt.GraphicsEnvironment { *; }
