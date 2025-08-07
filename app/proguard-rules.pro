@@ -25,6 +25,7 @@
 -keep class uniffi.** { *; }
 -keep class moe.rikaaa0928.** { *; }
 -keep class com.sun.jna.** { *; }
+-keep class com.android.org.** { *; }
 -keep class java.awt.Component { *; }
 -keep class java.awt.GraphicsEnvironment { *; }
 -keep class java.awt.HeadlessException { *; }
