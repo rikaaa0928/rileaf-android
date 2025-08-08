@@ -10,6 +10,7 @@ import android.content.pm.ServiceInfo
 import android.net.VpnService
 import android.os.Build
 import android.os.ParcelFileDescriptor
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -151,7 +152,7 @@ class LeafVpnService : VpnService() {
     private fun runLeaf() {
         val fd = vpnInterface?.detachFd()?: return
         val configContent = configManager.generateLeafConfigString(fd.toLong())
-        
+        Log.i("leaf start",configContent)
         try {
             leafRunWithConfigString(rtId, configContent)
         } catch (e: Exception) {
@@ -160,17 +161,15 @@ class LeafVpnService : VpnService() {
     }
     
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "VPN Service"
-            val descriptionText = "VPN service is running"
-            val importance = NotificationManager.IMPORTANCE_LOW
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                description = descriptionText
-            }
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+        val name = "VPN Service"
+        val descriptionText = "VPN service is running"
+        val importance = NotificationManager.IMPORTANCE_LOW
+        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            description = descriptionText
         }
+        val notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
     
     private fun createNotification(isConnected: Boolean): Notification {

@@ -99,7 +99,7 @@ class ConfigManager(private val context: Context) {
             IP-CIDR, 172.16.0.0/12, Direct
             IP-CIDR, 127.0.0.0/8, Direct
             IP-CIDR, 169.254.0.0/16, Direct
-            """.trimIndent()
+            """
         } else {
             ""
         }
@@ -117,7 +117,8 @@ class ConfigManager(private val context: Context) {
             $proxyLine
             
             [Rule]
-            $lanRules${if (lanRules.isNotEmpty()) "\n" else ""}FINAL, ${selectedProxy.name}
+            $lanRules${if (lanRules.isNotEmpty()) "\n" else ""}
+            FINAL, ${selectedProxy.name}
             
             [Host]
         """.trimIndent()
