@@ -113,11 +113,11 @@ class ConfigManager(private val context: Context) {
             tun-fd = $tunFd
             
             [Proxy]
-            Direct = direct
             $proxyLine
+            Direct = direct
             
             [Rule]
-            $lanRules${if (lanRules.isNotEmpty()) "\n" else ""}
+            $lanRules
             FINAL, ${selectedProxy.name}
             
             [Host]
