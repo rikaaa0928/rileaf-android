@@ -51,6 +51,11 @@ jobs:
           ~/.gradle/wrapper
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
     
+    - name: Generate protocol buffers
+      run: |
+        cd lib-src/leaf
+        make proto-gen
+    
     - name: Build Rust FFI libraries
       run: |
         cd lib-src/leaf
