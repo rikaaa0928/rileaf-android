@@ -57,10 +57,10 @@ jobs:
         sudo apt-get install -y protobuf-compiler
         protoc --version
     
-    - name: Generate protocol buffers
-      run: |
-        cd lib-src/leaf
-        make proto-gen
+#    - name: Generate protocol buffers
+#      run: |
+#        cd lib-src/leaf
+#        make proto-gen
     
     - name: Build Rust FFI libraries
       run: |
