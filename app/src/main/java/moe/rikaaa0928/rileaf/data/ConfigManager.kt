@@ -94,8 +94,8 @@ class ConfigManager(private val context: Context) {
 
         val inletsConfig = config.inlets.filter { it.isEnabled }.joinToString("\n") { inlet ->
             when (inlet.type.lowercase()) {
-                "http" -> "interface = ${inlet.address}\nport = ${inlet.port}"
-                "socks" -> "socks-interface = ${inlet.address}\nsocks-port = ${inlet.port}"
+                "http" -> "interface = ${inlet.address}\n            port = ${inlet.port}"
+                "socks" -> "socks-interface = ${inlet.address}\n            socks-port = ${inlet.port}"
                 else -> ""
             }
         }
