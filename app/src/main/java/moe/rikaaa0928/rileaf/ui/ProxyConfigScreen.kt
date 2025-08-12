@@ -98,10 +98,8 @@ fun ProxyConfigScreen(
             )
         },
         floatingActionButton = {
-            if (!isVpnConnected) {
-                FloatingActionButton(onClick = { showAddDialog = true }) {
-                    Icon(Icons.Default.Add, contentDescription = "添加代理")
-                }
+            FloatingActionButton(onClick = { showAddDialog = true }) {
+                Icon(Icons.Default.Add, contentDescription = "添加代理")
             }
         }
     ) { paddingValues ->
@@ -131,7 +129,7 @@ fun ProxyConfigScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "VPN 已连接，请先断开连接后再更改代理配置",
+                            text = "VPN 已连接，无法更改当前使用的代理配置",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onErrorContainer
                         )
@@ -237,13 +235,13 @@ fun ProxyConfigItem(
                     
                     IconButton(
                         onClick = onEdit,
-                        enabled = !isVpnConnected
+                        enabled = !(isVpnConnected && isSelected)
                     ) {
                         Icon(Icons.Default.Edit, contentDescription = "编辑")
                     }
                     IconButton(
                         onClick = onDelete,
-                        enabled = !isVpnConnected
+                        enabled = !(isVpnConnected && isSelected)
                     ) {
                         Icon(Icons.Default.Delete, contentDescription = "删除")
                     }
