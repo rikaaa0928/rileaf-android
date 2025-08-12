@@ -262,10 +262,21 @@ fun ProxyEditDialog(
     var server by remember { mutableStateOf(proxy?.server ?: "") }
     var port by remember { mutableStateOf(proxy?.port?.toString() ?: "443") }
     var password by remember { mutableStateOf(proxy?.password ?: "") }
-    
+
+    var isNameError by remember { mutableStateOf(false) }
+    var isServerError by remember { mutableStateOf(false) }
+    var isPortError by remember { mutableStateOf(false) }
+
+    fun validate(): Boolean {
+        isNameError = name.isBlank()
+        isServerError = server.isBlank()
+        isPortError = port.toIntOrNull() == null
+        return !isNameError && !isServerError && !isPortError
+    }
+
     val typeOptions = listOf("rog", "socks5", "http")
     var expandedType by remember { mutableStateOf(false) }
-    
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(if (proxy == null) "添加代理" else "编辑代理") },
@@ -275,18 +286,23 @@ fun ProxyEditDialog(
             ) {
                 OutlinedTextField(
                     value = name,
-                    onValueChange = { name = it },
+                    onValueChange = {
+                        name = it
+                        isNameError = false
+                    },
                     label = { Text("代理名称") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = isNameError,
+                    supportingText = { if (isNameError) Text("名称不能为空") }
                 )
-                
+
                 Box {
                     OutlinedTextField(
                         value = type.uppercase(),
                         onValueChange = { },
                         readOnly = true,
                         label = { Text("代理类型") },
-                        trailingIcon = { 
+                        trailingIcon = {
                             IconButton(onClick = { expandedType = !expandedType }) {
                                 Icon(Icons.Default.ArrowDropDown, contentDescription = "选择")
                             }
@@ -308,21 +324,31 @@ fun ProxyEditDialog(
                         }
                     }
                 }
-                
+
                 OutlinedTextField(
                     value = server,
-                    onValueChange = { server = it },
+                    onValueChange = {
+                        server = it
+                        isServerError = false
+                    },
                     label = { Text("服务器地址") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = isServerError,
+                    supportingText = { if (isServerError) Text("服务器地址不能为空") }
                 )
-                
+
                 OutlinedTextField(
                     value = port,
-                    onValueChange = { port = it },
+                    onValueChange = {
+                        port = it
+                        isPortError = false
+                    },
                     label = { Text("端口") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = isPortError,
+                    supportingText = { if (isPortError) Text("端口必须是有效的数字") }
                 )
-                
+
                 if (type == "rog") {
                     OutlinedTextField(
                         value = password,
@@ -336,7 +362,7 @@ fun ProxyEditDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (name.isNotBlank() && server.isNotBlank() && port.toIntOrNull() != null) {
+                    if (validate()) {
                         val newProxy = ProxyConfig(
                             id = proxy?.id ?: UUID.randomUUID().toString(),
                             name = name,
