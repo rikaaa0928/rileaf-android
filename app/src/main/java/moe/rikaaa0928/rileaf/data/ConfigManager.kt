@@ -91,6 +91,14 @@ class ConfigManager(private val context: Context) {
         }
         
         val routingDomainResolveStr = if (config.vpnConfig.routingDomainResolve) "true" else "false"
+
+        val inletsConfig = config.inlets.filter { it.isEnabled }.joinToString("\n") { inlet ->
+            when (inlet.type.lowercase()) {
+                "http" -> "interface = ${inlet.address}\nport = ${inlet.port}"
+                "socks" -> "socks-interface = ${inlet.address}\nsocks-port = ${inlet.port}"
+                else -> ""
+            }
+        }
         
         val lanRules = if (config.vpnConfig.bypassLan) {
             """
@@ -111,6 +119,7 @@ class ConfigManager(private val context: Context) {
             dns-server = ${config.vpnConfig.dnsServer}
             routing-domain-resolve = $routingDomainResolveStr
             tun-fd = $tunFd
+            $inletsConfig
             
             [Proxy]
             $proxyLine

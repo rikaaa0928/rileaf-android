@@ -53,7 +53,8 @@ fun MainScreen(
     onStopVpn: () -> Unit,
     onNavigateToProxyConfig: () -> Unit,
     onNavigateToVpnConfig: () -> Unit,
-    onNavigateToAppFilter: () -> Unit
+    onNavigateToAppFilter: () -> Unit,
+    onNavigateToInletConfig: () -> Unit
 ) {
     val viewModel: MainViewModel = viewModel { MainViewModel(configManager) }
     val isVpnRunning by viewModel.isVpnRunning
@@ -213,6 +214,14 @@ fun MainScreen(
                 description = "选择哪些应用使用 VPN",
                 icon = Icons.Default.Check,
                 onClick = onNavigateToAppFilter
+            )
+
+            // 入口配置
+            ConfigOptionCard(
+                title = "入口配置",
+                description = "添加额外的 HTTP 或 SOCKS 入口",
+                icon = Icons.Default.Add,
+                onClick = onNavigateToInletConfig
             )
         }
     }

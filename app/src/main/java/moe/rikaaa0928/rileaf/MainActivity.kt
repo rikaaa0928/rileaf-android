@@ -47,7 +47,8 @@ class MainActivity : ComponentActivity() {
                         onStopVpn = { stopVpnService() },
                         onNavigateToProxyConfig = { navController.navigate("proxy_config") },
                         onNavigateToVpnConfig = { navController.navigate("vpn_config") },
-                        onNavigateToAppFilter = { navController.navigate("app_filter") }
+                        onNavigateToAppFilter = { navController.navigate("app_filter") },
+                        onNavigateToInletConfig = { navController.navigate("inlet_config") }
                     )
                 }
                 
@@ -70,6 +71,13 @@ class MainActivity : ComponentActivity() {
                 
                 composable("app_filter") {
                     AppFilterScreen(
+                        configManager = configManager,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+
+                composable("inlet_config") {
+                    InletConfigScreen(
                         configManager = configManager,
                         onNavigateBack = { navController.popBackStack() }
                     )

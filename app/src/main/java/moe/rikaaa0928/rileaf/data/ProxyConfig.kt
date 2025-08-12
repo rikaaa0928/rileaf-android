@@ -38,9 +38,20 @@ data class ApplicationInfo(
 )
 
 @Serializable
+data class InletConfig(
+    val id: String,
+    val name: String,
+    val type: String, // "http" or "socks"
+    val address: String,
+    val port: Int,
+    val isEnabled: Boolean = true
+)
+
+@Serializable
 data class RileafConfig(
     val proxies: List<ProxyConfig> = emptyList(),
     val selectedProxyId: String? = null,
     val vpnConfig: VpnConfig = VpnConfig(),
-    val appFilterConfig: AppFilterConfig = AppFilterConfig()
+    val appFilterConfig: AppFilterConfig = AppFilterConfig(),
+    val inlets: List<InletConfig> = emptyList()
 )
