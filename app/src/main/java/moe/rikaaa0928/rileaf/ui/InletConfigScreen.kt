@@ -68,7 +68,7 @@ fun InletConfigScreen(
     val inlets by viewModel.inlets
 
     var showEditDialog by remember { mutableStateOf<InletConfig?>(null) }
-    var showAddDialog by remember { mutableState of<String?>(null) }
+    var showAddDialog by remember { mutableStateOf<String?>(null) }
 
     val hasHttpInlet = inlets.any { it.type == "http" }
     val hasSocksInlet = inlets.any { it.type == "socks" }
