@@ -48,10 +48,21 @@ data class InletConfig(
 )
 
 @Serializable
+data class LanguageConfig(
+    val languageCode: String = "system" // "system", "zh", "en"
+)
+
+@Serializable
+data class AppSettings(
+    val languageConfig: LanguageConfig = LanguageConfig()
+)
+
+@Serializable
 data class RileafConfig(
     val proxies: List<ProxyConfig> = emptyList(),
     val selectedProxyId: String? = null,
     val vpnConfig: VpnConfig = VpnConfig(),
     val appFilterConfig: AppFilterConfig = AppFilterConfig(),
-    val inlets: List<InletConfig> = emptyList()
+    val inlets: List<InletConfig> = emptyList(),
+    val appSettings: AppSettings = AppSettings()
 )

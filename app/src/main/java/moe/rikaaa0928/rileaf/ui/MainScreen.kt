@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import moe.rikaaa0928.rileaf.R
@@ -33,7 +34,7 @@ class MainViewModel(private val configManager: ConfigManager) : ViewModel() {
     private fun loadCurrentProxy() {
         val config = configManager.getConfig()
         val selectedProxy = config.proxies.find { it.id == config.selectedProxyId }
-        _currentProxyName.value = selectedProxy?.name ?: "未选择代理"
+        _currentProxyName.value = selectedProxy?.name ?: ""
     }
     
     fun setVpnRunning(running: Boolean) {
@@ -54,7 +55,8 @@ fun MainScreen(
     onNavigateToProxyConfig: () -> Unit,
     onNavigateToVpnConfig: () -> Unit,
     onNavigateToAppFilter: () -> Unit,
-    onNavigateToInletConfig: () -> Unit
+    onNavigateToInletConfig: () -> Unit,
+    onNavigateToAppSettings: () -> Unit
 ) {
     val viewModel: MainViewModel = viewModel { MainViewModel(configManager) }
     val isVpnRunning by viewModel.isVpnRunning
@@ -118,13 +120,13 @@ fun MainScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     
                     Text(
-                        text = if (isVpnRunning) "VPN 已连接" else "VPN 未连接",
+                        text = stringResource(if (isVpnRunning) R.string.vpn_connected else R.string.vpn_disconnected),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
                     
                     Text(
-                        text = if (isVpnRunning) "您的连接已受保护" else "点击连接开始保护",
+                        text = stringResource(if (isVpnRunning) R.string.connection_protected else R.string.click_to_connect),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -143,7 +145,7 @@ fun MainScreen(
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(if (isVpnRunning) "断开连接" else "连接 VPN")
+                        Text(stringResource(if (isVpnRunning) R.string.disconnect_vpn else R.string.connect_vpn))
                     }
                 }
             }
@@ -156,7 +158,7 @@ fun MainScreen(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = "当前代理",
+                        text = stringResource(R.string.current_proxy),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -167,7 +169,7 @@ fun MainScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = currentProxyName,
+                            text = if (currentProxyName.isNotEmpty()) currentProxyName else stringResource(R.string.no_proxy_selected),
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Icon(
@@ -176,7 +178,7 @@ fun MainScreen(
                             else 
                                 Icons.Default.Warning,
                             contentDescription = null,
-                            tint = if (currentProxyName != "未选择代理") 
+                            tint = if (currentProxyName.isNotEmpty()) 
                                 MaterialTheme.colorScheme.primary 
                             else 
                                 MaterialTheme.colorScheme.onSurfaceVariant
@@ -187,41 +189,49 @@ fun MainScreen(
             
             // 配置选项
             Text(
-                text = "配置管理",
+                text = stringResource(R.string.config_management),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
             
             // 代理配置
             ConfigOptionCard(
-                title = "代理配置",
-                description = "管理代理服务器设置",
+                title = stringResource(R.string.proxy_config),
+                description = stringResource(R.string.proxy_config_desc),
                 icon = Icons.Default.Settings,
                 onClick = onNavigateToProxyConfig
             )
             
             // VPN 配置
             ConfigOptionCard(
-                title = "VPN 配置",
-                description = "网络接口和连接设置",
+                title = stringResource(R.string.vpn_config),
+                description = stringResource(R.string.vpn_config_desc),
                 icon = Icons.Default.Build,
                 onClick = onNavigateToVpnConfig
             )
             
             // 应用分流
             ConfigOptionCard(
-                title = "应用分流",
-                description = "选择哪些应用使用 VPN",
+                title = stringResource(R.string.app_filter),
+                description = stringResource(R.string.app_filter_desc),
                 icon = Icons.Default.Check,
                 onClick = onNavigateToAppFilter
             )
 
             // 入口配置
             ConfigOptionCard(
-                title = "入口配置",
-                description = "添加额外的 HTTP 或 SOCKS 入口",
+                title = stringResource(R.string.inlet_config),
+                description = stringResource(R.string.inlet_config_desc),
                 icon = Icons.Default.Add,
                 onClick = onNavigateToInletConfig
+            )
+
+            // 应用设置
+            ConfigOptionCard(
+                title = stringResource(R.string.app_settings),
+                description = stringResource(R.string.app_settings_desc),
+                icon = Icons.Default.Settings,
+                onClick = onNavigateToAppSettings
             )
         }
     }

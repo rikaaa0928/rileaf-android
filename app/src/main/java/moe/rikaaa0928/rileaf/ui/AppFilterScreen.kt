@@ -17,11 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
+import moe.rikaaa0928.rileaf.R
 import moe.rikaaa0928.rileaf.data.ConfigManager
 import moe.rikaaa0928.rileaf.data.AppFilterConfig
 import moe.rikaaa0928.rileaf.data.ApplicationInfo
@@ -141,10 +143,10 @@ fun AppFilterScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("应用分流") },
+                title = { Text(stringResource(R.string.app_filter)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "返回")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -165,7 +167,7 @@ fun AppFilterScreen(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = "过滤模式",
+                        text = stringResource(R.string.filter_mode),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -177,14 +179,14 @@ fun AppFilterScreen(
                     ) {
                         Column {
                             Text(
-                                text = if (appFilterConfig.isWhitelistMode) "白名单模式" else "黑名单模式",
+                                text = if (appFilterConfig.isWhitelistMode) stringResource(R.string.whitelist_mode) else stringResource(R.string.blacklist_mode),
                                 style = MaterialTheme.typography.bodyLarge
                             )
                             Text(
                                 text = if (appFilterConfig.isWhitelistMode) 
-                                    "只有选中的应用通过 VPN" 
+                                    stringResource(R.string.whitelist_desc) 
                                 else 
-                                    "选中的应用不通过 VPN",
+                                    stringResource(R.string.blacklist_desc),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -207,7 +209,7 @@ fun AppFilterScreen(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = "应用类型",
+                        text = stringResource(R.string.app_type),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold
                     )
@@ -224,9 +226,9 @@ fun AppFilterScreen(
                                 AppFilterType.SYSTEM -> installedApps.count { it.isSystemApp }
                             }
                             val label = when (type) {
-                                AppFilterType.ALL -> "全部 ($count)"
-                                AppFilterType.USER -> "用户 ($count)"
-                                AppFilterType.SYSTEM -> "系统 ($count)"
+                                AppFilterType.ALL -> stringResource(R.string.all_apps, count)
+                                AppFilterType.USER -> stringResource(R.string.user_apps, count)
+                                AppFilterType.SYSTEM -> stringResource(R.string.system_apps, count)
                             }
                             
                             FilterChip(
@@ -246,8 +248,8 @@ fun AppFilterScreen(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { viewModel.updateSearchQuery(it) },
-                label = { Text("搜索应用") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "搜索") },
+                label = { Text(stringResource(R.string.search_apps)) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = stringResource(R.string.search)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -263,12 +265,12 @@ fun AppFilterScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "显示 ${filteredApps.size} 个应用",
+                    text = stringResource(R.string.showing_apps, filteredApps.size),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "已选择 ${appFilterConfig.selectedApps.size} 个",
+                    text = stringResource(R.string.selected_apps, appFilterConfig.selectedApps.size),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Medium
@@ -367,7 +369,7 @@ fun AppFilterItem(
                 )
                 if (app.isSystemApp) {
                     Text(
-                        text = "系统应用",
+                        text = stringResource(R.string.system_app),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.outline
                     )

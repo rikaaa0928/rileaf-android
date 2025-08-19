@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Rileaf</string>
+
+    <!-- 主界面 -->
+    <string name="vpn_connected">VPN 已连接</string>
+    <string name="vpn_disconnected">VPN 未连接</string>
+    <string name="connection_protected">您的连接已受保护</string>
+    <string name="click_to_connect">点击连接开始保护</string>
+    <string name="connect_vpn">连接 VPN</string>
+    <string name="disconnect_vpn">断开连接</string>
+    <string name="current_proxy">当前代理</string>
+    <string name="no_proxy_selected">未选择代理</string>
+    <string name="config_management">配置管理</string>
+
+    <!-- 配置选项 -->
+    <string name="proxy_config">代理配置</string>
+    <string name="proxy_config_desc">管理代理服务器设置</string>
+    <string name="vpn_config">VPN 配置</string>
+    <string name="vpn_config_desc">网络接口和连接设置</string>
+    <string name="app_filter">应用分流</string>
+    <string name="app_filter_desc">选择哪些应用使用 VPN</string>
+    <string name="inlet_config">入口配置</string>
+    <string name="inlet_config_desc">添加额外的 HTTP 或 SOCKS 入口</string>
+    <string name="app_settings">应用设置</string>
+    <string name="app_settings_desc">应用配置和首选项</string>
+    <string name="language_settings">语言设置</string>
+    <string name="language_settings_desc">选择应用界面语言</string>
+
+    <!-- 通用操作 -->
+    <string name="back">返回</string>
+    <string name="save">保存</string>
+    <string name="cancel">取消</string>
+    <string name="delete">删除</string>
+    <string name="edit">编辑</string>
+    <string name="add">添加</string>
+    <string name="select">选择</string>
+    <string name="selected">已选择</string>
+    <string name="search">搜索</string>
+
+    <!-- VPN 配置 -->
+    <string name="network_settings">网络设置</string>
+    <string name="vpn_ip_address">VPN IP 地址</string>
+    <string name="vpn_ip_placeholder">10.9.28.2</string>
+    <string name="subnet_mask">子网掩码 (CIDR)</string>
+    <string name="subnet_mask_placeholder">24</string>
+    <string name="dns_server">DNS 服务器</string>
+    <string name="dns_server_placeholder">8.8.8.8</string>
+    <string name="session_name">会话名称</string>
+    <string name="session_name_placeholder">Rileaf VPN</string>
+    <string name="log_settings">日志设置</string>
+    <string name="log_level">日志级别</string>
+    <string name="routing_settings">路由设置</string>
+    <string name="bypass_lan">局域网直连</string>
+    <string name="bypass_lan_desc">绕过代理直接访问局域网地址</string>
+    <string name="routing_domain_resolve">域名解析路由</string>
+    <string name="routing_domain_resolve_desc">对域名进行解析后再进行路由匹配</string>
+    <string name="explanation">说明</string>
+    <string name="vpn_config_explanation">• VPN IP 地址：虚拟网络接口的 IP 地址\n• 子网掩码：CIDR 格式的网络掩码，通常为 24\n• DNS 服务器：VPN 连接使用的 DNS 服务器\n• 会话名称：VPN 连接显示的名称\n• 日志级别：调试时可设置为 debug 或 info\n• 局域网直连：开启后局域网流量不通过代理\n• 域名解析路由：开启后对域名解析IP再匹配路由规则</string>
+
+    <!-- 代理配置 -->
+    <string name="add_proxy">添加代理</string>
+    <string name="vpn_connected_warning">VPN 已连接，无法更改当前使用的代理配置</string>
+    <string name="proxy_name">代理名称</string>
+    <string name="proxy_type">代理类型</string>
+    <string name="server_address">服务器地址</string>
+    <string name="port">端口</string>
+    <string name="password">密码</string>
+    <string name="edit_proxy">编辑代理</string>
+    <string name="name_cannot_empty">名称不能为空</string>
+    <string name="server_cannot_empty">服务器地址不能为空</string>
+    <string name="port_invalid">端口必须是有效的数字</string>
+
+    <!-- 应用分流 -->
+    <string name="filter_mode">过滤模式</string>
+    <string name="whitelist_mode">白名单模式</string>
+    <string name="blacklist_mode">黑名单模式</string>
+    <string name="whitelist_desc">只有选中的应用通过 VPN</string>
+    <string name="blacklist_desc">选中的应用不通过 VPN</string>
+    <string name="app_type">应用类型</string>
+    <string name="all_apps">全部 (%d)</string>
+    <string name="user_apps">用户 (%d)</string>
+    <string name="system_apps">系统 (%d)</string>
+    <string name="search_apps">搜索应用</string>
+    <string name="showing_apps">显示 %d 个应用</string>
+    <string name="selected_apps">已选择 %d 个</string>
+    <string name="system_app">系统应用</string>
+
+    <!-- 入口配置 -->
+    <string name="add_http_inlet">添加 HTTP 入口</string>
+    <string name="add_socks_inlet">添加 SOCKS 入口</string>
+    <string name="inlet_name">入口名称</string>
+    <string name="inlet_type">入口类型</string>
+    <string name="bind_address">绑定地址</string>
+    <string name="add_inlet">添加入口</string>
+    <string name="edit_inlet">编辑入口</string>
+    <string name="address_cannot_empty">地址不能为空</string>
+
+    <!-- 应用设置 -->
+    <string name="general_settings">通用设置</string>
+    <string name="language">语言</string>
+    
+    <!-- 语言设置 -->
+    <string name="select_language">选择语言</string>
+    <string name="language_chinese">简体中文</string>
+    <string name="language_english">English</string>
+    <string name="language_system">跟随系统</string>
+    <string name="current_language">当前语言</string>
+    <string name="restart_required">重启应用后生效</string>
+</resources>

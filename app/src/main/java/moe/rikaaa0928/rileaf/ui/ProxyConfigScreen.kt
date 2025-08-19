@@ -14,8 +14,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import moe.rikaaa0928.rileaf.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import moe.rikaaa0928.rileaf.data.ConfigManager
@@ -89,17 +91,17 @@ fun ProxyConfigScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("代理配置") },
+                title = { Text(stringResource(R.string.proxy_config)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "返回")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { showAddDialog = true }) {
-                Icon(Icons.Default.Add, contentDescription = "添加代理")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_proxy))
             }
         }
     ) { paddingValues ->
@@ -129,7 +131,7 @@ fun ProxyConfigScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "VPN 已连接，无法更改当前使用的代理配置",
+                            text = stringResource(R.string.vpn_connected_warning),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onErrorContainer
                         )
@@ -219,7 +221,7 @@ fun ProxyConfigItem(
                 Row {
                     if (isSelected) {
                         Text(
-                            text = "已选择",
+                            text = stringResource(R.string.selected),
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.labelMedium,
                             modifier = Modifier.padding(end = 8.dp)
@@ -229,7 +231,7 @@ fun ProxyConfigItem(
                             onClick = onSelect,
                             enabled = !isVpnConnected
                         ) {
-                            Text("选择")
+                            Text(stringResource(R.string.select))
                         }
                     }
                     
@@ -237,13 +239,13 @@ fun ProxyConfigItem(
                         onClick = onEdit,
                         enabled = !(isVpnConnected && isSelected)
                     ) {
-                        Icon(Icons.Default.Edit, contentDescription = "编辑")
+                        Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.edit))
                     }
                     IconButton(
                         onClick = onDelete,
                         enabled = !(isVpnConnected && isSelected)
                     ) {
-                        Icon(Icons.Default.Delete, contentDescription = "删除")
+                        Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete))
                     }
                 }
             }
@@ -279,7 +281,7 @@ fun ProxyEditDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (proxy == null) "添加代理" else "编辑代理") },
+        title = { Text(stringResource(if (proxy == null) R.string.add_proxy else R.string.edit_proxy)) },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -290,10 +292,10 @@ fun ProxyEditDialog(
                         name = it
                         isNameError = false
                     },
-                    label = { Text("代理名称") },
+                    label = { Text(stringResource(R.string.proxy_name)) },
                     modifier = Modifier.fillMaxWidth(),
                     isError = isNameError,
-                    supportingText = { if (isNameError) Text("名称不能为空") }
+                    supportingText = { if (isNameError) Text(stringResource(R.string.name_cannot_empty)) }
                 )
 
                 Box {
@@ -301,10 +303,10 @@ fun ProxyEditDialog(
                         value = type.uppercase(),
                         onValueChange = { },
                         readOnly = true,
-                        label = { Text("代理类型") },
+                        label = { Text(stringResource(R.string.proxy_type)) },
                         trailingIcon = {
                             IconButton(onClick = { expandedType = !expandedType }) {
-                                Icon(Icons.Default.ArrowDropDown, contentDescription = "选择")
+                                Icon(Icons.Default.ArrowDropDown, contentDescription = stringResource(R.string.select))
                             }
                         },
                         modifier = Modifier.fillMaxWidth()
@@ -331,10 +333,10 @@ fun ProxyEditDialog(
                         server = it
                         isServerError = false
                     },
-                    label = { Text("服务器地址") },
+                    label = { Text(stringResource(R.string.server_address)) },
                     modifier = Modifier.fillMaxWidth(),
                     isError = isServerError,
-                    supportingText = { if (isServerError) Text("服务器地址不能为空") }
+                    supportingText = { if (isServerError) Text(stringResource(R.string.server_cannot_empty)) }
                 )
 
                 OutlinedTextField(
@@ -343,17 +345,17 @@ fun ProxyEditDialog(
                         port = it
                         isPortError = false
                     },
-                    label = { Text("端口") },
+                    label = { Text(stringResource(R.string.port)) },
                     modifier = Modifier.fillMaxWidth(),
                     isError = isPortError,
-                    supportingText = { if (isPortError) Text("端口必须是有效的数字") }
+                    supportingText = { if (isPortError) Text(stringResource(R.string.port_invalid)) }
                 )
 
                 if (type == "rog") {
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
-                        label = { Text("密码") },
+                        label = { Text(stringResource(R.string.password)) },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -375,12 +377,12 @@ fun ProxyEditDialog(
                     }
                 }
             ) {
-                Text("保存")
+                Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("取消")
+                Text(stringResource(R.string.cancel))
             }
         }
     )
