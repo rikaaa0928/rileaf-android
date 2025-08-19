@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -76,10 +77,10 @@ fun InletConfigScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("入口配置") },
+                title = { Text(stringResource(R.string.inlet_config_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "返回")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -101,14 +102,14 @@ fun InletConfigScreen(
                     enabled = !hasHttpInlet,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("添加 HTTP 入口")
+                    Text(stringResource(R.string.add_http_inlet))
                 }
                 Button(
                     onClick = { showAddDialog = "socks" },
                     enabled = !hasSocksInlet,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("添加 SOCKS 入口")
+                    Text(stringResource(R.string.add_socks_inlet))
                 }
             }
 
@@ -183,10 +184,10 @@ fun InletConfigItem(
 
                 Row {
                     IconButton(onClick = onEdit) {
-                        Icon(Icons.Default.Edit, contentDescription = "编辑")
+                        Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.edit))
                     }
                     IconButton(onClick = onDelete) {
-                        Icon(Icons.Default.Delete, contentDescription = "删除")
+                        Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete))
                     }
                 }
             }
@@ -218,7 +219,7 @@ fun InletEditDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (inlet == null) "添加入口" else "编辑入口") },
+        title = { Text(if (inlet == null) stringResource(R.string.add_inlet) else stringResource(R.string.edit_inlet)) },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -229,17 +230,17 @@ fun InletEditDialog(
                         name = it
                         isNameError = false
                     },
-                    label = { Text("入口名称") },
+                    label = { Text(stringResource(R.string.inlet_name)) },
                     modifier = Modifier.fillMaxWidth(),
                     isError = isNameError,
-                    supportingText = { if (isNameError) Text("名称不能为空") }
+                    supportingText = { if (isNameError) Text(stringResource(R.string.name_cannot_be_empty)) }
                 )
 
                 OutlinedTextField(
                     value = type.uppercase(),
                     onValueChange = { },
                     readOnly = true,
-                    label = { Text("入口类型") },
+                    label = { Text(stringResource(R.string.inlet_type)) },
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -249,10 +250,10 @@ fun InletEditDialog(
                         address = it
                         isAddressError = false
                     },
-                    label = { Text("绑定地址") },
+                    label = { Text(stringResource(R.string.bind_address)) },
                     modifier = Modifier.fillMaxWidth(),
                     isError = isAddressError,
-                    supportingText = { if (isAddressError) Text("地址不能为空") }
+                    supportingText = { if (isAddressError) Text(stringResource(R.string.address_cannot_be_empty)) }
                 )
 
                 OutlinedTextField(
@@ -261,10 +262,10 @@ fun InletEditDialog(
                         port = it
                         isPortError = false
                     },
-                    label = { Text("端口") },
+                    label = { Text(stringResource(R.string.port)) },
                     modifier = Modifier.fillMaxWidth(),
                     isError = isPortError,
-                    supportingText = { if (isPortError) Text("端口必须是有效的数字") }
+                    supportingText = { if (isPortError) Text(stringResource(R.string.port_must_be_a_valid_number)) }
                 )
             }
         },
@@ -283,12 +284,12 @@ fun InletEditDialog(
                     }
                 }
             ) {
-                Text("保存")
+                Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("取消")
+                Text(stringResource(R.string.cancel))
             }
         }
     )

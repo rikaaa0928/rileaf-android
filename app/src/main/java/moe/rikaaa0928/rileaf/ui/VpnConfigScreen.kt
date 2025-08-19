@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -43,7 +44,7 @@ fun VpnConfigScreen(
 ) {
     val viewModel: VpnConfigViewModel = viewModel { VpnConfigViewModel(configManager) }
     val vpnConfig by viewModel.vpnConfig
-    
+
     var vpnAddress by remember { mutableStateOf("") }
     var vpnNetmask by remember { mutableStateOf("") }
     var dnsServer by remember { mutableStateOf("") }
@@ -51,7 +52,7 @@ fun VpnConfigScreen(
     var logLevel by remember { mutableStateOf("") }
     var bypassLan by remember { mutableStateOf(true) }
     var routingDomainResolve by remember { mutableStateOf(true) }
-    
+
     // 同步状态
     LaunchedEffect(vpnConfig) {
         vpnAddress = vpnConfig.vpnAddress
@@ -62,17 +63,17 @@ fun VpnConfigScreen(
         bypassLan = vpnConfig.bypassLan
         routingDomainResolve = vpnConfig.routingDomainResolve
     }
-    
+
     val logLevelOptions = listOf("error", "warn", "info", "debug", "trace")
     var expandedLogLevel by remember { mutableStateOf(false) }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("VPN 配置") },
+                title = { Text(stringResource(R.string.vpn_config_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "返回")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 actions = {
@@ -91,7 +92,7 @@ fun VpnConfigScreen(
                             onNavigateBack()
                         }
                     ) {
-                        Text("保存")
+                        Text(stringResource(R.string.save))
                     }
                 }
             )
@@ -106,59 +107,59 @@ fun VpnConfigScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "网络设置",
+                text = stringResource(R.string.network_settings),
                 style = MaterialTheme.typography.titleMedium
             )
-            
+
             OutlinedTextField(
                 value = vpnAddress,
                 onValueChange = { vpnAddress = it },
-                label = { Text("VPN IP 地址") },
-                placeholder = { Text("10.9.28.2") },
+                label = { Text(stringResource(R.string.vpn_ip_address)) },
+                placeholder = { Text(stringResource(R.string.vpn_ip_address_placeholder)) },
                 modifier = Modifier.fillMaxWidth()
             )
-            
+
             OutlinedTextField(
                 value = vpnNetmask,
                 onValueChange = { vpnNetmask = it },
-                label = { Text("子网掩码 (CIDR)") },
-                placeholder = { Text("24") },
+                label = { Text(stringResource(R.string.subnet_mask_cidr)) },
+                placeholder = { Text(stringResource(R.string.subnet_mask_cidr_placeholder)) },
                 modifier = Modifier.fillMaxWidth()
             )
-            
+
             OutlinedTextField(
                 value = dnsServer,
                 onValueChange = { dnsServer = it },
-                label = { Text("DNS 服务器") },
-                placeholder = { Text("8.8.8.8") },
+                label = { Text(stringResource(R.string.dns_server)) },
+                placeholder = { Text(stringResource(R.string.dns_server_placeholder)) },
                 modifier = Modifier.fillMaxWidth()
             )
-            
-            
+
+
             OutlinedTextField(
                 value = sessionName,
                 onValueChange = { sessionName = it },
-                label = { Text("会话名称") },
-                placeholder = { Text("Rileaf VPN") },
+                label = { Text(stringResource(R.string.session_name)) },
+                placeholder = { Text(stringResource(R.string.session_name_placeholder)) },
                 modifier = Modifier.fillMaxWidth()
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             Text(
-                text = "日志设置",
+                text = stringResource(R.string.log_settings),
                 style = MaterialTheme.typography.titleMedium
             )
-            
+
             Box {
                 OutlinedTextField(
                     value = logLevel.uppercase(),
                     onValueChange = { },
                     readOnly = true,
-                    label = { Text("日志级别") },
-                    trailingIcon = { 
+                    label = { Text(stringResource(R.string.log_level)) },
+                    trailingIcon = {
                         IconButton(onClick = { expandedLogLevel = !expandedLogLevel }) {
-                            Icon(Icons.Default.ArrowDropDown, contentDescription = "选择")
+                            Icon(Icons.Default.ArrowDropDown, contentDescription = stringResource(R.string.select))
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
@@ -178,14 +179,14 @@ fun VpnConfigScreen(
                     }
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             Text(
-                text = "路由设置",
+                text = stringResource(R.string.routing_settings),
                 style = MaterialTheme.typography.titleMedium
             )
-            
+
             Card(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -199,11 +200,11 @@ fun VpnConfigScreen(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "局域网直连",
+                                text = stringResource(R.string.bypass_lan),
                                 style = MaterialTheme.typography.bodyLarge
                             )
                             Text(
-                                text = "绕过代理直接访问局域网地址",
+                                text = stringResource(R.string.bypass_lan_description),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -213,9 +214,9 @@ fun VpnConfigScreen(
                             onCheckedChange = { bypassLan = it }
                         )
                     }
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -223,11 +224,11 @@ fun VpnConfigScreen(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "域名解析路由",
+                                text = stringResource(R.string.routing_domain_resolve),
                                 style = MaterialTheme.typography.bodyLarge
                             )
                             Text(
-                                text = "对域名进行解析后再进行路由匹配",
+                                text = stringResource(R.string.routing_domain_resolve_description),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -239,9 +240,9 @@ fun VpnConfigScreen(
                     }
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -252,18 +253,12 @@ fun VpnConfigScreen(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = "说明",
+                        text = stringResource(R.string.description),
                         style = MaterialTheme.typography.titleSmall
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "• VPN IP 地址：虚拟网络接口的 IP 地址\n" +
-                                "• 子网掩码：CIDR 格式的网络掩码，通常为 24\n" +
-                                "• DNS 服务器：VPN 连接使用的 DNS 服务器\n" +
-                                "• 会话名称：VPN 连接显示的名称\n" +
-                                "• 日志级别：调试时可设置为 debug 或 info\n" +
-                                "• 局域网直连：开启后局域网流量不通过代理\n" +
-                                "• 域名解析路由：开启后对域名解析IP再匹配路由规则",
+                        text = stringResource(R.string.vpn_config_description_text),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

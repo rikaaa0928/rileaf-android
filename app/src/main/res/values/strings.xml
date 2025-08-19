@@ -1,3 +1,91 @@
 <resources>
     <string name="app_name">Rileaf</string>
+    <string name="unselected_proxy">Unselected proxy</string>
+    <string name="app_name_vpn">Rileaf VPN</string>
+    <string name="vpn_connected">VPN Connected</string>
+    <string name="vpn_disconnected">VPN Disconnected</string>
+    <string name="your_connection_is_protected">Your connection is protected</string>
+    <string name="tap_to_connect_to_protect">Tap to connect to start protection</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="connect_vpn">Connect VPN</string>
+    <string name="current_proxy">Current Proxy</string>
+    <string name="configuration_management">Configuration Management</string>
+    <string name="proxy_config">Proxy Config</string>
+    <string name="manage_proxy_server_settings">Manage proxy server settings</string>
+    <string name="vpn_config">VPN Config</string>
+    <string name="network_interface_and_connection_settings">Network interface and connection settings</string>
+    <string name="app_bypass">App Bypass</string>
+    <string name="select_apps_to_use_vpn">Select which apps use VPN</string>
+    <string name="inlet_config">Inlet Config</string>
+    <string name="add_extra_http_or_socks_inlets">Add extra HTTP or SOCKS inlets</string>
+    <string name="app_filter_title">App Bypass</string>
+    <string name="back">Back</string>
+    <string name="filter_mode">Filter Mode</string>
+    <string name="whitelist_mode">Whitelist Mode</string>
+    <string name="blacklist_mode">Blacklist Mode</string>
+    <string name="whitelist_mode_description">Only selected apps go through VPN</string>
+    <string name="blacklist_mode_description">Selected apps do not go through VPN</string>
+    <string name="app_type">App Type</string>
+    <string name="all_apps">All (%d)</string>
+    <string name="user_apps">User (%d)</string>
+    <string name="system_apps">System (%d)</string>
+    <string name="search_apps">Search apps</string>
+    <string name="search">Search</string>
+    <string name="showing_apps">Showing %d apps</string>
+    <string name="selected_apps">Selected %d</string>
+    <string name="system_app">System App</string>
+    <string name="inlet_config_title">Inlet Config</string>
+    <string name="add_http_inlet">Add HTTP Inlet</string>
+    <string name="add_socks_inlet">Add SOCKS Inlet</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="add_inlet">Add Inlet</string>
+    <string name="edit_inlet">Edit Inlet</string>
+    <string name="inlet_name">Inlet Name</string>
+    <string name="name_cannot_be_empty">Name cannot be empty</string>
+    <string name="inlet_type">Inlet Type</string>
+    <string name="bind_address">Bind Address</string>
+    <string name="address_cannot_be_empty">Address cannot be empty</string>
+    <string name="port">Port</string>
+    <string name="port_must_be_a_valid_number">Port must be a valid number</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="proxy_config_title">Proxy Config</string>
+    <string name="add_proxy">Add Proxy</string>
+    <string name="vpn_connected_cannot_change_proxy">VPN is connected, cannot change the currently used proxy configuration</string>
+    <string name="selected">Selected</string>
+    <string name="select">Select</string>
+    <string name="edit_proxy">Edit Proxy</string>
+    <string name="proxy_name">Proxy Name</string>
+    <string name="proxy_type">Proxy Type</string>
+    <string name="server_address">Server Address</string>
+    <string name="server_address_cannot_be_empty">Server address cannot be empty</string>
+    <string name="password">Password</string>
+    <string name="vpn_config_title">VPN Config</string>
+    <string name="network_settings">Network Settings</string>
+    <string name="vpn_ip_address">VPN IP Address</string>
+    <string name="vpn_ip_address_placeholder">10.9.28.2</string>
+    <string name="subnet_mask_cidr">Subnet Mask (CIDR)</string>
+    <string name="subnet_mask_cidr_placeholder">24</string>
+    <string name="dns_server">DNS Server</string>
+    <string name="dns_server_placeholder">8.8.8.8</string>
+    <string name="session_name">Session Name</string>
+    <string name="session_name_placeholder">Rileaf VPN</string>
+    <string name="log_settings">Log Settings</string>
+    <string name="log_level">Log Level</string>
+    <string name="routing_settings">Routing Settings</string>
+    <string name="bypass_lan">Bypass LAN</string>
+    <string name="bypass_lan_description">Bypass proxy for LAN addresses</string>
+    <string name="routing_domain_resolve">Routing Domain Resolve</string>
+    <string name="routing_domain_resolve_description">Resolve domain names before matching routing rules</string>
+    <string name="description">Description</string>
+    <string name="vpn_config_description_text">"• VPN IP Address: The IP address of the virtual network interface\n"
+"• Subnet Mask: The network mask in CIDR format, usually 24\n"
+"• DNS Server: The DNS server used by the VPN connection\n"
+"• Session Name: The name displayed for the VPN connection\n"
+"• Log Level: Can be set to debug or info for debugging\n"
+"• Bypass LAN: When enabled, LAN traffic does not go through the proxy\n"
+"• Routing Domain Resolve: When enabled, resolves domain IPs before matching routing rules"</string>
+    <string name="language">Language</string>
+    <string name="language_selection_title">Language Selection</string>
 </resources>

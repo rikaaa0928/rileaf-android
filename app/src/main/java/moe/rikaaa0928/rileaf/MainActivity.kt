@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import moe.rikaaa0928.rileaf.data.ConfigManager
 import moe.rikaaa0928.rileaf.ui.*
+import moe.rikaaa0928.rileaf.ui.theme.RileafTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -28,59 +29,68 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             val configManager = ConfigManager(this@MainActivity)
-            
-            NavHost(
-                navController = navController,
-                startDestination = "main"
-            ) {
-                composable("main") {
-                    MainScreen(
-                        configManager = configManager,
-                        onStartVpn = { 
-                            val intent = VpnService.prepare(this@MainActivity)
-                            if (intent != null) {
-                                vpnPermissionLauncher.launch(intent)
-                            } else {
-                                startVpnService()
-                            }
-                        },
-                        onStopVpn = { stopVpnService() },
-                        onNavigateToProxyConfig = { navController.navigate("proxy_config") },
-                        onNavigateToVpnConfig = { navController.navigate("vpn_config") },
-                        onNavigateToAppFilter = { navController.navigate("app_filter") },
-                        onNavigateToInletConfig = { navController.navigate("inlet_config") }
-                    )
-                }
-                
-                composable("proxy_config") {
-                    val mainEntry = navController.getBackStackEntry("main")
-                    val mainViewModel: MainViewModel = viewModel(mainEntry) { MainViewModel(configManager) }
-                    ProxyConfigScreen(
-                        configManager = configManager,
-                        isVpnConnected = mainViewModel.isVpnRunning.value,
-                        onNavigateBack = { navController.popBackStack() }
-                    )
-                }
-                
-                composable("vpn_config") {
-                    VpnConfigScreen(
-                        configManager = configManager,
-                        onNavigateBack = { navController.popBackStack() }
-                    )
-                }
-                
-                composable("app_filter") {
-                    AppFilterScreen(
-                        configManager = configManager,
-                        onNavigateBack = { navController.popBackStack() }
-                    )
-                }
 
-                composable("inlet_config") {
-                    InletConfigScreen(
-                        configManager = configManager,
-                        onNavigateBack = { navController.popBackStack() }
-                    )
+            RileafTheme {
+                NavHost(
+                    navController = navController,
+                    startDestination = "main"
+                ) {
+                    composable("main") {
+                        MainScreen(
+                            configManager = configManager,
+                            onStartVpn = {
+                                val intent = VpnService.prepare(this@MainActivity)
+                                if (intent != null) {
+                                    vpnPermissionLauncher.launch(intent)
+                                } else {
+                                    startVpnService()
+                                }
+                            },
+                            onStopVpn = { stopVpnService() },
+                            onNavigateToProxyConfig = { navController.navigate("proxy_config") },
+                            onNavigateToVpnConfig = { navController.navigate("vpn_config") },
+                            onNavigateToAppFilter = { navController.navigate("app_filter") },
+                            onNavigateToInletConfig = { navController.navigate("inlet_config") },
+                            onNavigateToLanguage = { navController.navigate("language") }
+                        )
+                    }
+
+                    composable("proxy_config") {
+                        val mainEntry = navController.getBackStackEntry("main")
+                        val mainViewModel: MainViewModel = viewModel(mainEntry) { MainViewModel(configManager) }
+                        ProxyConfigScreen(
+                            configManager = configManager,
+                            isVpnConnected = mainViewModel.isVpnRunning.value,
+                            onNavigateBack = { navController.popBackStack() }
+                        )
+                    }
+
+                    composable("vpn_config") {
+                        VpnConfigScreen(
+                            configManager = configManager,
+                            onNavigateBack = { navController.popBackStack() }
+                        )
+                    }
+
+                    composable("app_filter") {
+                        AppFilterScreen(
+                            configManager = configManager,
+                            onNavigateBack = { navController.popBackStack() }
+                        )
+                    }
+
+                    composable("inlet_config") {
+                        InletConfigScreen(
+                            configManager = configManager,
+                            onNavigateBack = { navController.popBackStack() }
+                        )
+                    }
+
+                    composable("language") {
+                        LanguageScreen(
+                            onNavigateBack = { navController.popBackStack() }
+                        )
+                    }
                 }
             }
         }
