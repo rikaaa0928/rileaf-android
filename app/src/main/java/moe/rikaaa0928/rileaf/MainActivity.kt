@@ -12,9 +12,10 @@ import androidx.compose.runtime.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.ViewModelProvider
 import moe.rikaaa0928.rileaf.data.ConfigManager
 import moe.rikaaa0928.rileaf.data.LanguageManager
+import moe.rikaaa0928.rileaf.data.VpnState
 import moe.rikaaa0928.rileaf.ui.*
 
 class MainActivity : ComponentActivity() {
@@ -25,6 +26,8 @@ class MainActivity : ComponentActivity() {
                 startVpnService()
             }
         }
+
+    private lateinit var mainViewModel: MainViewModel
 
     override fun attachBaseContext(newBase: Context?) {
         if (newBase != null) {
@@ -39,20 +42,28 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val configManager = ConfigManager(this)
+        mainViewModel = ViewModelProvider(this, MainViewModelFactory(configManager))[MainViewModel::class.java]
+
         setContent {
             val navController = rememberNavController()
-            val configManager = ConfigManager(this@MainActivity)
             var refreshKey by remember { mutableIntStateOf(0) }
-            
+            val vpnState by mainViewModel.vpnState.collectAsState()
+            val currentProxyName by mainViewModel.currentProxyName
+
             key(refreshKey) {
                 NavHost(
                     navController = navController,
                     startDestination = "main"
                 ) {
                     composable("main") {
+                        LaunchedEffect(Unit) {
+                            mainViewModel.refreshCurrentProxy()
+                        }
                         MainScreen(
-                            configManager = configManager,
-                            onStartVpn = { 
+                            vpnState = vpnState,
+                            currentProxyName = currentProxyName,
+                            onStartVpn = {
                                 val intent = VpnService.prepare(this@MainActivity)
                                 if (intent != null) {
                                     vpnPermissionLauncher.launch(intent)
@@ -68,24 +79,22 @@ class MainActivity : ComponentActivity() {
                             onNavigateToAppSettings = { navController.navigate("app_settings") }
                         )
                     }
-                    
+
                     composable("proxy_config") {
-                        val mainEntry = remember { navController.getBackStackEntry("main") }
-                        val mainViewModel: MainViewModel = viewModel(mainEntry) { MainViewModel(configManager) }
                         ProxyConfigScreen(
                             configManager = configManager,
-                            isVpnConnected = mainViewModel.isVpnRunning.value,
+                            isVpnConnected = vpnState == VpnState.CONNECTED,
                             onNavigateBack = { navController.popBackStack() }
                         )
                     }
-                    
+
                     composable("vpn_config") {
                         VpnConfigScreen(
                             configManager = configManager,
                             onNavigateBack = { navController.popBackStack() }
                         )
                     }
-                    
+
                     composable("app_filter") {
                         AppFilterScreen(
                             configManager = configManager,
@@ -104,7 +113,7 @@ class MainActivity : ComponentActivity() {
                         AppSettingsScreen(
                             configManager = configManager,
                             onNavigateBack = { navController.popBackStack() },
-                            onLanguageChanged = { 
+                            onLanguageChanged = {
                                 refreshKey++
                                 recreate()
                             }
@@ -124,13 +133,13 @@ class MainActivity : ComponentActivity() {
 
     private fun startVpnService() {
         val intent = Intent(this, LeafVpnService::class.java)
-        intent.action = "moe.rikaaa0928.rileaf.CONNECT"
+        intent.action = LeafVpnService.ACTION_CONNECT
         startService(intent)
     }
 
     private fun stopVpnService() {
         val intent = Intent(this, LeafVpnService::class.java)
-        intent.action = "moe.rikaaa0928.rileaf.DISCONNECT"
+        intent.action = LeafVpnService.ACTION_DISCONNECT
         startService(intent)
     }
 }

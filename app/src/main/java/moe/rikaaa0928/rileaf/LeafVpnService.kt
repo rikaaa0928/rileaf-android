@@ -10,6 +10,7 @@ import android.content.pm.ServiceInfo
 import android.net.VpnService
 import android.os.Build
 import android.os.ParcelFileDescriptor
+import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import java.io.FileInputStream
@@ -20,13 +21,19 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import uniffi.leafuniffi.*
 import moe.rikaaa0928.rileaf.data.ConfigManager
+import moe.rikaaa0928.rileaf.data.VpnState
+import moe.rikaaa0928.rileaf.data.VpnStateRepository
 
 class LeafVpnService : VpnService() {
+
+    override fun onBind(intent: Intent): IBinder? {
+        return null
+    }
 
     companion object {
         const val ACTION_CONNECT = "moe.rikaaa0928.rileaf.CONNECT"
         const val ACTION_DISCONNECT = "moe.rikaaa0928.rileaf.DISCONNECT"
-        
+
         private const val NOTIFICATION_ID = 1
         private const val CHANNEL_ID = "vpn_service_channel"
     }
@@ -39,12 +46,19 @@ class LeafVpnService : VpnService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         configManager = ConfigManager(this)
         createNotificationChannel()
-        
-        if (intent != null && ACTION_DISCONNECT.equals(intent.action)) {
+
+        if (VpnService.prepare(this) != null) {
+            // VPN not prepared, probably due to always-on without permission
             stopVpnService()
             return START_NOT_STICKY
         }
-        
+
+        if (intent?.action == ACTION_DISCONNECT) {
+            stopVpnService()
+            return START_NOT_STICKY
+        }
+
+        VpnStateRepository.updateState(VpnState.CONNECTING)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             startForeground(NOTIFICATION_ID, createNotification(false), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
         } else {
@@ -55,6 +69,7 @@ class LeafVpnService : VpnService() {
     }
 
     override fun onDestroy() {
+        stopVpnService()
         super.onDestroy()
     }
 
@@ -68,21 +83,29 @@ class LeafVpnService : VpnService() {
             return
         }
 
-        createVpnInterface()
-        
-        // Update notification to show connected status
+        try {
+            createVpnInterface()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            stopVpnService()
+            return
+        }
+
         val notification = createNotification(true)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(NOTIFICATION_ID, notification)
-        
+
         leafThread = Thread {
             runLeaf()
         }
         leafThread?.start()
+        VpnStateRepository.updateState(VpnState.CONNECTED)
     }
 
     private fun stopVpnService() {
+        VpnStateRepository.updateState(VpnState.DISCONNECTING)
         if (vpnInterface == null) {
+            VpnStateRepository.updateState(VpnState.DISCONNECTED)
             return
         }
 
@@ -104,59 +127,52 @@ class LeafVpnService : VpnService() {
 
         stopForeground(true)
         stopSelf()
+        VpnStateRepository.updateState(VpnState.DISCONNECTED)
     }
 
     private fun createVpnInterface() {
         val config = configManager.getConfig()
         val vpnConfig = config.vpnConfig
         val appFilter = config.appFilterConfig
-        
+
         val builder = Builder()
         builder.addAddress(vpnConfig.vpnAddress, vpnConfig.vpnNetmask)
         builder.addRoute("0.0.0.0", 0)
-        
+
         builder.addDnsServer(vpnConfig.dnsServer)
         builder.setSession(vpnConfig.sessionName)
-        
-        // 根据配置应用过滤规则
+
         try {
             if (appFilter.isWhitelistMode) {
-                // 白名单模式：使用addAllowedApplication，只有选中的应用通过VPN
-                
-                // 只允许白名单中的应用通过VPN
                 for (appPackageName in appFilter.selectedApps) {
-                    if (appPackageName != this.packageName) { // 跳过自己
+                    if (appPackageName != this.packageName) {
                         builder.addAllowedApplication(appPackageName)
                     }
                 }
             } else {
-                // 黑名单模式：使用addDisallowedApplication，选中的应用不通过VPN
-                // 始终排除自己
                 builder.addDisallowedApplication(packageName)
-                
-                // 排除黑名单中的应用
                 for (appPackageName in appFilter.selectedApps) {
-                    if (appPackageName != this.packageName) { // 跳过自己（已经排除）
+                    if (appPackageName != this.packageName) {
                         builder.addDisallowedApplication(appPackageName)
                     }
                 }
-                // 不在黑名单中的应用默认会通过VPN
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        
+
         vpnInterface = builder.establish()
     }
 
     private fun runLeaf() {
-        val fd = vpnInterface?.detachFd()?: return
+        val fd = vpnInterface?.detachFd() ?: return
         val configContent = configManager.generateLeafConfigString(fd.toLong())
-        Log.i("leaf start",configContent)
+        Log.i("leaf start", configContent)
         try {
             leafRunWithConfigString(rtId, configContent)
         } catch (e: Exception) {
             e.printStackTrace()
+            stopVpnService()
         }
     }
     

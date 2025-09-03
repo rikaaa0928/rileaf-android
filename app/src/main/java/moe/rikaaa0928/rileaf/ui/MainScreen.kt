@@ -16,40 +16,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import moe.rikaaa0928.rileaf.R
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import moe.rikaaa0928.rileaf.data.ConfigManager
-
-class MainViewModel(private val configManager: ConfigManager) : ViewModel() {
-    private var _isVpnRunning = mutableStateOf(false)
-    val isVpnRunning: State<Boolean> = _isVpnRunning
-    
-    private var _currentProxyName = mutableStateOf("")
-    val currentProxyName: State<String> = _currentProxyName
-    
-    init {
-        loadCurrentProxy()
-    }
-    
-    private fun loadCurrentProxy() {
-        val config = configManager.getConfig()
-        val selectedProxy = config.proxies.find { it.id == config.selectedProxyId }
-        _currentProxyName.value = selectedProxy?.name ?: ""
-    }
-    
-    fun setVpnRunning(running: Boolean) {
-        _isVpnRunning.value = running
-    }
-    
-    fun refreshCurrentProxy() {
-        loadCurrentProxy()
-    }
-}
+import moe.rikaaa0928.rileaf.data.VpnState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    configManager: ConfigManager,
+    vpnState: VpnState,
+    currentProxyName: String,
     onStartVpn: () -> Unit,
     onStopVpn: () -> Unit,
     onNavigateToProxyConfig: () -> Unit,
@@ -58,15 +31,7 @@ fun MainScreen(
     onNavigateToInletConfig: () -> Unit,
     onNavigateToAppSettings: () -> Unit
 ) {
-    val viewModel: MainViewModel = viewModel { MainViewModel(configManager) }
-    val isVpnRunning by viewModel.isVpnRunning
-    val currentProxyName by viewModel.currentProxyName
-    
-    // 当从配置页面返回时刷新代理信息
-    LaunchedEffect(Unit) {
-        viewModel.refreshCurrentProxy()
-    }
-    
+    val isVpnRunning = vpnState == VpnState.CONNECTED
     Scaffold(
         topBar = {
             TopAppBar(
@@ -97,9 +62,9 @@ fun MainScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (isVpnRunning) 
-                        MaterialTheme.colorScheme.primaryContainer 
-                    else 
+                    containerColor = if (isVpnRunning)
+                        MaterialTheme.colorScheme.primaryContainer
+                    else
                         MaterialTheme.colorScheme.surface
                 )
             ) {
@@ -111,45 +76,49 @@ fun MainScreen(
                         imageVector = Icons.Default.Lock,
                         contentDescription = null,
                         modifier = Modifier.size(48.dp),
-                        tint = if (isVpnRunning) 
-                            MaterialTheme.colorScheme.primary 
-                        else 
+                        tint = if (isVpnRunning)
+                            MaterialTheme.colorScheme.primary
+                        else
                             MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    
+
                     Spacer(modifier = Modifier.height(12.dp))
-                    
+
                     Text(
-                        text = stringResource(if (isVpnRunning) R.string.vpn_connected else R.string.vpn_disconnected),
+                        text = when (vpnState) {
+                            VpnState.CONNECTED -> stringResource(R.string.vpn_connected)
+                            VpnState.CONNECTING -> "Connecting..."
+                            VpnState.DISCONNECTING -> "Disconnecting..."
+                            VpnState.DISCONNECTED -> stringResource(R.string.vpn_disconnected)
+                        },
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
-                    
+
                     Text(
                         text = stringResource(if (isVpnRunning) R.string.connection_protected else R.string.click_to_connect),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     Button(
                         onClick = {
                             if (isVpnRunning) {
                                 onStopVpn()
-                                viewModel.setVpnRunning(false)
                             } else {
                                 onStartVpn()
-                                viewModel.setVpnRunning(true)
                             }
                         },
+                        enabled = vpnState == VpnState.CONNECTED || vpnState == VpnState.DISCONNECTED,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(stringResource(if (isVpnRunning) R.string.disconnect_vpn else R.string.connect_vpn))
                     }
                 }
             }
-            
+
             // 当前代理信息
             Card(
                 modifier = Modifier.fillMaxWidth()
@@ -173,14 +142,14 @@ fun MainScreen(
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Icon(
-                            imageVector = if (currentProxyName != "未选择代理") 
-                                Icons.Default.CheckCircle 
-                            else 
+                            imageVector = if (currentProxyName.isNotEmpty())
+                                Icons.Default.CheckCircle
+                            else
                                 Icons.Default.Warning,
                             contentDescription = null,
-                            tint = if (currentProxyName.isNotEmpty()) 
-                                MaterialTheme.colorScheme.primary 
-                            else 
+                            tint = if (currentProxyName.isNotEmpty())
+                                MaterialTheme.colorScheme.primary
+                            else
                                 MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
