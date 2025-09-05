@@ -9,6 +9,7 @@
     <string name="click_to_connect">Tap to connect and start protection</string>
     <string name="connect_vpn">Connect VPN</string>
     <string name="disconnect_vpn">Disconnect</string>
+    <string name="vpn_connecting">Connecting...</string>
     <string name="current_proxy">Current Proxy</string>
     <string name="no_proxy_selected">No proxy selected</string>
     <string name="config_management">Configuration Management</string>

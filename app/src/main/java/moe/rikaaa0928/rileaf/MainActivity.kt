@@ -15,14 +15,27 @@ import androidx.navigation.compose.rememberNavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import moe.rikaaa0928.rileaf.data.ConfigManager
 import moe.rikaaa0928.rileaf.data.LanguageManager
+import moe.rikaaa0928.rileaf.data.VpnStatus
+import moe.rikaaa0928.rileaf.debug.VpnStatusDebugHelper
 import moe.rikaaa0928.rileaf.ui.*
 
 class MainActivity : ComponentActivity() {
 
+    private lateinit var statusManager: VpnStatusManager
+    private lateinit var debugHelper: VpnStatusDebugHelper
+    
     private val vpnPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                startVpnService()
+            when (result.resultCode) {
+                Activity.RESULT_OK -> {
+                    startVpnService()
+                }
+                Activity.RESULT_CANCELED -> {
+                    statusManager.updateStatus(VpnStatus.ERROR_PERMISSION_DENIED, "VPN permission was denied by user")
+                }
+                else -> {
+                    statusManager.updateStatus(VpnStatus.ERROR_PREPARE_FAILED, "VPN preparation failed with result code: ${result.resultCode}")
+                }
             }
         }
 
@@ -39,6 +52,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        statusManager = VpnStatusManager.getInstance(this)
+        debugHelper = VpnStatusDebugHelper.getInstance(this)
+        
+        // Start debug monitoring - always enabled for better debugging
+        debugHelper.startMonitoring()
+        
         setContent {
             val navController = rememberNavController()
             val configManager = ConfigManager(this@MainActivity)
@@ -52,12 +71,18 @@ class MainActivity : ComponentActivity() {
                     composable("main") {
                         MainScreen(
                             configManager = configManager,
+                            statusManager = statusManager,
                             onStartVpn = { 
-                                val intent = VpnService.prepare(this@MainActivity)
-                                if (intent != null) {
-                                    vpnPermissionLauncher.launch(intent)
-                                } else {
-                                    startVpnService()
+                                try {
+                                    val intent = VpnService.prepare(this@MainActivity)
+                                    if (intent != null) {
+                                        statusManager.updateStatus(VpnStatus.CONNECTING, "Requesting VPN permission...")
+                                        vpnPermissionLauncher.launch(intent)
+                                    } else {
+                                        startVpnService()
+                                    }
+                                } catch (e: Exception) {
+                                    statusManager.updateStatus(VpnStatus.ERROR_PREPARE_FAILED, "Failed to prepare VPN: ${e.message}")
                                 }
                             },
                             onStopVpn = { stopVpnService() },
@@ -70,11 +95,9 @@ class MainActivity : ComponentActivity() {
                     }
                     
                     composable("proxy_config") {
-                        val mainEntry = remember { navController.getBackStackEntry("main") }
-                        val mainViewModel: MainViewModel = viewModel(mainEntry) { MainViewModel(configManager) }
                         ProxyConfigScreen(
                             configManager = configManager,
-                            isVpnConnected = mainViewModel.isVpnRunning.value,
+                            isVpnConnected = statusManager.isConnected(),
                             onNavigateBack = { navController.popBackStack() }
                         )
                     }
@@ -121,16 +144,29 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    
+    override fun onDestroy() {
+        debugHelper.stopMonitoring()
+        super.onDestroy()
+    }
 
     private fun startVpnService() {
-        val intent = Intent(this, LeafVpnService::class.java)
-        intent.action = "moe.rikaaa0928.rileaf.CONNECT"
-        startService(intent)
+        try {
+            val intent = Intent(this, LeafVpnService::class.java)
+            intent.action = LeafVpnService.ACTION_CONNECT
+            startService(intent)
+        } catch (e: Exception) {
+            statusManager.updateStatus(VpnStatus.ERROR_PREPARE_FAILED, "Failed to start VPN service: ${e.message}")
+        }
     }
 
     private fun stopVpnService() {
-        val intent = Intent(this, LeafVpnService::class.java)
-        intent.action = "moe.rikaaa0928.rileaf.DISCONNECT"
-        startService(intent)
+        try {
+            val intent = Intent(this, LeafVpnService::class.java)
+            intent.action = LeafVpnService.ACTION_DISCONNECT
+            startService(intent)
+        } catch (e: Exception) {
+            statusManager.updateStatus(VpnStatus.ERROR_RUST_RUNTIME_ERROR, "Failed to stop VPN service: ${e.message}")
+        }
     }
 }

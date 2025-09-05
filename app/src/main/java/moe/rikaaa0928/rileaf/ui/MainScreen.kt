@@ -19,11 +19,12 @@ import moe.rikaaa0928.rileaf.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import moe.rikaaa0928.rileaf.data.ConfigManager
+import moe.rikaaa0928.rileaf.VpnStatusManager
+import moe.rikaaa0928.rileaf.data.VpnStatus
+import moe.rikaaa0928.rileaf.data.VpnStatusInfo
+import androidx.compose.runtime.collectAsState
 
 class MainViewModel(private val configManager: ConfigManager) : ViewModel() {
-    private var _isVpnRunning = mutableStateOf(false)
-    val isVpnRunning: State<Boolean> = _isVpnRunning
-    
     private var _currentProxyName = mutableStateOf("")
     val currentProxyName: State<String> = _currentProxyName
     
@@ -37,10 +38,6 @@ class MainViewModel(private val configManager: ConfigManager) : ViewModel() {
         _currentProxyName.value = selectedProxy?.name ?: ""
     }
     
-    fun setVpnRunning(running: Boolean) {
-        _isVpnRunning.value = running
-    }
-    
     fun refreshCurrentProxy() {
         loadCurrentProxy()
     }
@@ -50,6 +47,7 @@ class MainViewModel(private val configManager: ConfigManager) : ViewModel() {
 @Composable
 fun MainScreen(
     configManager: ConfigManager,
+    statusManager: VpnStatusManager,
     onStartVpn: () -> Unit,
     onStopVpn: () -> Unit,
     onNavigateToProxyConfig: () -> Unit,
@@ -59,13 +57,17 @@ fun MainScreen(
     onNavigateToAppSettings: () -> Unit
 ) {
     val viewModel: MainViewModel = viewModel { MainViewModel(configManager) }
-    val isVpnRunning by viewModel.isVpnRunning
+    val vpnStatusInfo by statusManager.statusFlow.collectAsState()
     val currentProxyName by viewModel.currentProxyName
     
     // 当从配置页面返回时刷新代理信息
     LaunchedEffect(Unit) {
         viewModel.refreshCurrentProxy()
     }
+    
+    val isVpnRunning = vpnStatusInfo.status == VpnStatus.CONNECTED
+    val isVpnConnecting = vpnStatusInfo.status == VpnStatus.CONNECTING || vpnStatusInfo.status == VpnStatus.DISCONNECTING
+    val hasVpnError = vpnStatusInfo.status.name.startsWith("ERROR_")
     
     Scaffold(
         topBar = {
@@ -97,10 +99,12 @@ fun MainScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (isVpnRunning) 
-                        MaterialTheme.colorScheme.primaryContainer 
-                    else 
-                        MaterialTheme.colorScheme.surface
+                    containerColor = when {
+                        isVpnRunning -> MaterialTheme.colorScheme.primaryContainer
+                        hasVpnError -> MaterialTheme.colorScheme.errorContainer
+                        isVpnConnecting -> MaterialTheme.colorScheme.secondaryContainer
+                        else -> MaterialTheme.colorScheme.surface
+                    }
                 )
             ) {
                 Column(
@@ -108,27 +112,48 @@ fun MainScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Lock,
+                        imageVector = when {
+                            isVpnRunning -> Icons.Default.Lock
+                            hasVpnError -> Icons.Default.Warning
+                            isVpnConnecting -> Icons.Default.Refresh
+                            else -> Icons.Default.Lock
+                        },
                         contentDescription = null,
                         modifier = Modifier.size(48.dp),
-                        tint = if (isVpnRunning) 
-                            MaterialTheme.colorScheme.primary 
-                        else 
-                            MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = when {
+                            isVpnRunning -> MaterialTheme.colorScheme.primary
+                            hasVpnError -> MaterialTheme.colorScheme.error
+                            isVpnConnecting -> MaterialTheme.colorScheme.secondary
+                            else -> MaterialTheme.colorScheme.onSurfaceVariant
+                        }
                     )
                     
                     Spacer(modifier = Modifier.height(12.dp))
                     
                     Text(
-                        text = stringResource(if (isVpnRunning) R.string.vpn_connected else R.string.vpn_disconnected),
+                        text = when (vpnStatusInfo.status) {
+                            VpnStatus.CONNECTED -> stringResource(R.string.vpn_connected)
+                            VpnStatus.CONNECTING -> "正在连接..."
+                            VpnStatus.DISCONNECTING -> "正在断开..."
+                            VpnStatus.ERROR_PERMISSION_DENIED -> "权限被拒绝"
+                            VpnStatus.ERROR_ANOTHER_VPN_ACTIVE -> "其他VPN正在运行"
+                            VpnStatus.ERROR_VPN_REVOKED -> "VPN权限被撤销"
+                            VpnStatus.ERROR_ESTABLISH_FAILED -> "连接失败"
+                            VpnStatus.ERROR_CONFIG_INVALID -> "配置错误"
+                            VpnStatus.ERROR_RUST_STARTUP_FAILED -> "服务启动失败"
+                            VpnStatus.ERROR_SYSTEM_KILLED -> "服务被系统终止"
+                            else -> stringResource(R.string.vpn_disconnected)
+                        },
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
                     
                     Text(
-                        text = stringResource(if (isVpnRunning) R.string.connection_protected else R.string.click_to_connect),
+                        text = vpnStatusInfo.message.ifEmpty {
+                            stringResource(if (isVpnRunning) R.string.connection_protected else R.string.click_to_connect)
+                        },
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = if (hasVpnError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     
                     Spacer(modifier = Modifier.height(16.dp))
@@ -137,15 +162,30 @@ fun MainScreen(
                         onClick = {
                             if (isVpnRunning) {
                                 onStopVpn()
-                                viewModel.setVpnRunning(false)
                             } else {
                                 onStartVpn()
-                                viewModel.setVpnRunning(true)
                             }
                         },
+                        enabled = !isVpnConnecting,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(stringResource(if (isVpnRunning) R.string.disconnect_vpn else R.string.connect_vpn))
+                        Text(
+                            stringResource(
+                                if (isVpnRunning) R.string.disconnect_vpn 
+                                else if (isVpnConnecting) R.string.vpn_connecting 
+                                else R.string.connect_vpn
+                            )
+                        )
+                    }
+                    
+                    // 显示错误详情
+                    if (hasVpnError && vpnStatusInfo.errorCode != null) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "错误代码: ${vpnStatusInfo.errorCode}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
                 }
             }
