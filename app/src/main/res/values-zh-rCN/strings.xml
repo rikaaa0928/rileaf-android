@@ -108,4 +108,9 @@
     <string name="language_system">跟随系统</string>
     <string name="current_language">当前语言</string>
     <string name="restart_required">重启应用后生效</string>
+
+    <!-- 代理切换确认 -->
+    <string name="confirm_switch_title">确认切换</string>
+    <string name="confirm_switch_message">切换代理将重启VPN服务，确定吗？</string>
+    <string name="confirm">确认</string>
 </resources>

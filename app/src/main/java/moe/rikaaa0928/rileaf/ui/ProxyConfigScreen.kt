@@ -79,7 +79,8 @@ class ProxyConfigViewModel(private val configManager: ConfigManager) : ViewModel
 fun ProxyConfigScreen(
     configManager: ConfigManager,
     isVpnConnected: Boolean = false,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onSwitchProxy: (String) -> Unit = {}
 ) {
     val viewModel: ProxyConfigViewModel = viewModel { ProxyConfigViewModel(configManager) }
     val proxies by viewModel.proxies
@@ -110,35 +111,6 @@ fun ProxyConfigScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // VPN 连接状态提示
-            if (isVpnConnected) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Lock,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = stringResource(R.string.vpn_connected_warning),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                    }
-                }
-            }
-            
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -152,7 +124,8 @@ fun ProxyConfigScreen(
                         isVpnConnected = isVpnConnected,
                         onSelect = { viewModel.selectProxy(proxy.id) },
                         onEdit = { editingProxy = proxy },
-                        onDelete = { viewModel.deleteProxy(proxy.id) }
+                        onDelete = { viewModel.deleteProxy(proxy.id) },
+                        onSwitch = { onSwitchProxy(proxy.id) }
                     )
                 }
             }
@@ -183,14 +156,48 @@ fun ProxyConfigScreen(
 }
 
 @Composable
+fun ConfirmSwitchDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.confirm_switch_title)) },
+        text = { Text(stringResource(R.string.confirm_switch_message)) },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirm()
+                    onDismiss()
+                }
+            ) {
+                Text(stringResource(R.string.confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    )
+}
+
+@Composable
 fun ProxyConfigItem(
     proxy: ProxyConfig,
     isSelected: Boolean,
     isVpnConnected: Boolean = false,
     onSelect: () -> Unit,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onSwitch: () -> Unit
 ) {
+    var showConfirmDialog by remember { mutableStateOf(false) }
+
+    if (showConfirmDialog) {
+        ConfirmSwitchDialog(
+            onDismiss = { showConfirmDialog = false },
+            onConfirm = onSwitch
+        )
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -228,8 +235,13 @@ fun ProxyConfigItem(
                         )
                     } else {
                         TextButton(
-                            onClick = onSelect,
-                            enabled = !isVpnConnected
+                            onClick = {
+                                if (isVpnConnected) {
+                                    showConfirmDialog = true
+                                } else {
+                                    onSelect()
+                                }
+                            }
                         ) {
                             Text(stringResource(R.string.select))
                         }

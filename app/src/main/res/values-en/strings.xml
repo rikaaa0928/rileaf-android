@@ -108,4 +108,9 @@
     <string name="language_system">Follow System</string>
     <string name="current_language">Current Language</string>
     <string name="restart_required">Takes effect after app restart</string>
+
+    <!-- Proxy Switch Confirmation -->
+    <string name="confirm_switch_title">Confirm Switch</string>
+    <string name="confirm_switch_message">Switching proxy will restart the VPN service. Are you sure?</string>
+    <string name="confirm">Confirm</string>
 </resources>

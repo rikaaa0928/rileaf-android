@@ -12,7 +12,10 @@ import androidx.compose.runtime.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import moe.rikaaa0928.rileaf.data.ConfigManager
 import moe.rikaaa0928.rileaf.data.LanguageManager
 import moe.rikaaa0928.rileaf.data.VpnStatus
@@ -98,7 +101,10 @@ class MainActivity : ComponentActivity() {
                         ProxyConfigScreen(
                             configManager = configManager,
                             isVpnConnected = statusManager.isConnected(),
-                            onNavigateBack = { navController.popBackStack() }
+                            onNavigateBack = { navController.popBackStack() },
+                            onSwitchProxy = { proxyId ->
+                                switchVpnConfig(proxyId)
+                            }
                         )
                     }
                     
@@ -167,6 +173,24 @@ class MainActivity : ComponentActivity() {
             startService(intent)
         } catch (e: Exception) {
             statusManager.updateStatus(VpnStatus.ERROR_RUST_RUNTIME_ERROR, "Failed to stop VPN service: ${e.message}")
+        }
+    }
+
+    private fun switchVpnConfig(proxyId: String) {
+        lifecycleScope.launch {
+            // 1. Stop VPN
+            stopVpnService()
+
+            // 2. Wait for VPN to disconnect
+            statusManager.statusFlow.first { it.status == VpnStatus.DISCONNECTED }
+
+            // 3. Update config
+            val configManager = ConfigManager(this@MainActivity)
+            val currentConfig = configManager.getConfig()
+            configManager.saveConfig(currentConfig.copy(selectedProxyId = proxyId))
+
+            // 4. Start VPN
+            startVpnService()
         }
     }
 }
