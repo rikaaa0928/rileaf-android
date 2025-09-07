@@ -98,12 +98,15 @@ class MainActivity : ComponentActivity() {
                     }
                     
                     composable("proxy_config") {
+                        val vpnStatusInfo by statusManager.statusFlow.collectAsState()
+                        val isVpnConnected = vpnStatusInfo.status == VpnStatus.CONNECTED
+
                         ProxyConfigScreen(
                             configManager = configManager,
-                            isVpnConnected = statusManager.isConnected(),
+                            isVpnConnected = isVpnConnected,
                             onNavigateBack = { navController.popBackStack() },
                             onSwitchProxy = { proxyId ->
-                                switchVpnConfig(proxyId)
+                                switchVpnConfig(proxyId, navController)
                             }
                         )
                     }
@@ -176,7 +179,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun switchVpnConfig(proxyId: String) {
+    private fun switchVpnConfig(proxyId: String, navController: androidx.navigation.NavController) {
         lifecycleScope.launch {
             // 1. Stop VPN
             stopVpnService()
@@ -191,6 +194,9 @@ class MainActivity : ComponentActivity() {
 
             // 4. Start VPN
             startVpnService()
+
+            // 5. Navigate back to main screen
+            navController.popBackStack()
         }
     }
 }
