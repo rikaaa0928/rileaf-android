@@ -23,7 +23,9 @@ data class VpnConfig(
     val bypassLan: Boolean = true,
     val routingDomainResolve: Boolean = true,
     val routingHistoryEnabled: Boolean = false,
-    val routingHistoryMaxRecords: Int = 100
+     val routingHistoryMaxRecords: Int = 100,
+    val fakeDnsExcludeMode: Boolean = true, // false = blacklist (always-real-ip), true = whitelist (always-fake-ip)
+    val fakeDnsExcludeDomains: String = "*"
 )
 
 @Serializable

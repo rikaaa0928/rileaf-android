@@ -57,7 +57,13 @@
     <string name="routing_domain_resolve">Domain Resolve Routing</string>
     <string name="routing_domain_resolve_desc">Resolve domain to IP before route matching</string>
     <string name="explanation">Explanation</string>
-    <string name="vpn_config_explanation">• VPN IP Address: IP address of the virtual network interface\n• Subnet Mask: Network mask in CIDR format, usually 24\n• DNS Server: DNS server used by VPN connection\n• Session Name: Display name for VPN connection\n• Log Level: Set to debug or info for troubleshooting\n• Bypass LAN: Local network traffic won\'t go through proxy\n• Domain Resolve Routing: Resolve domain to IP before matching routing rules</string>
+    <string name="vpn_config_explanation">• VPN IP Address: IP address of the virtual network interface\n• Subnet Mask: Network mask in CIDR format, usually 24\n• DNS Server: DNS server used by VPN connection\n• Session Name: Display name for VPN connection\n• Log Level: Set to debug or info for troubleshooting\n• Bypass LAN: Local network traffic won\'t go through proxy\n• Domain Resolve Routing: Resolve domain to IP before matching routing rules\n• FakeDNS Mode: Choose between whitelist or blacklist for domain matching\n• FakeDNS Domains: Domains for the chosen matching mechanism, empty to disable</string>
+    <string name="fakedns_settings">FakeDNS Settings</string>
+    <string name="fakedns_mode">FakeDNS Mode (Whitelist/Blacklist)</string>
+    <string name="fakedns_domains">FakeDNS Domains</string>
+    <string name="fakedns_domains_placeholder">example.com, google.com</string>
+    <string name="fakedns_whitelist_desc">Always fake-ip (Whitelist)</string>
+    <string name="fakedns_blacklist_desc">Always real-ip (Blacklist)</string>
 
     <!-- Proxy Configuration -->
     <string name="add_proxy">Add Proxy</string>

@@ -57,7 +57,13 @@
     <string name="routing_domain_resolve">域名解析路由</string>
     <string name="routing_domain_resolve_desc">对域名进行解析后再进行路由匹配</string>
     <string name="explanation">说明</string>
-    <string name="vpn_config_explanation">• VPN IP 地址：虚拟网络接口的 IP 地址\n• 子网掩码：CIDR 格式的网络掩码，通常为 24\n• DNS 服务器：VPN 连接使用的 DNS 服务器\n• 会话名称：VPN 连接显示的名称\n• 日志级别：调试时可设置为 debug 或 info\n• 局域网直连：开启后局域网流量不通过代理\n• 域名解析路由：开启后对域名解析IP再匹配路由规则</string>
+    <string name="vpn_config_explanation">• VPN IP 地址：虚拟网络接口的 IP 地址\n• 子网掩码：CIDR 格式的网络掩码，通常为 24\n• DNS 服务器：VPN 连接使用的 DNS 服务器\n• 会话名称：VPN 连接显示的名称\n• 日志级别：调试时可设置为 debug 或 info\n• 局域网直连：开启后局域网流量不通过代理\n• 域名解析路由：开启后对域名解析IP再匹配路由规则\n• FakeDNS 模式：选择域名匹配的白名单或黑名单机制\n• FakeDNS 域名：对应匹配机制的域名列表，为空则不添加配置</string>
+    <string name="fakedns_settings">FakeDNS 设置</string>
+    <string name="fakedns_mode">FakeDNS 模式 (白名单/黑名单)</string>
+    <string name="fakedns_domains">FakeDNS 域名</string>
+    <string name="fakedns_domains_placeholder">example.com, google.com</string>
+    <string name="fakedns_whitelist_desc">强制使用 Fake-IP (白名单)</string>
+    <string name="fakedns_blacklist_desc">强制使用真实 IP (黑名单)</string>
 
     <!-- 代理配置 -->
     <string name="add_proxy">添加代理</string>

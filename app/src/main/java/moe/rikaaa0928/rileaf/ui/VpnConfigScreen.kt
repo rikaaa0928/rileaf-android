@@ -56,6 +56,8 @@ fun VpnConfigScreen(
     var routingDomainResolve by remember { mutableStateOf(true) }
     var routingHistoryEnabled by remember { mutableStateOf(false) }
     var routingHistoryMaxRecords by remember { mutableStateOf("100") }
+    var fakeDnsExcludeMode by remember { mutableStateOf(true) }
+    var fakeDnsExcludeDomains by remember { mutableStateOf("*") }
     
     // 同步状态
     LaunchedEffect(vpnConfig) {
@@ -68,6 +70,8 @@ fun VpnConfigScreen(
         routingDomainResolve = vpnConfig.routingDomainResolve
         routingHistoryEnabled = vpnConfig.routingHistoryEnabled
         routingHistoryMaxRecords = vpnConfig.routingHistoryMaxRecords.toString()
+        fakeDnsExcludeMode = vpnConfig.fakeDnsExcludeMode
+        fakeDnsExcludeDomains = vpnConfig.fakeDnsExcludeDomains
     }
     
     val logLevelOptions = listOf("error", "warn", "info", "debug", "trace")
@@ -94,7 +98,9 @@ fun VpnConfigScreen(
                                 bypassLan = bypassLan,
                                 routingDomainResolve = routingDomainResolve,
                                 routingHistoryEnabled = routingHistoryEnabled,
-                                routingHistoryMaxRecords = routingHistoryMaxRecords.toIntOrNull() ?: 100
+                                routingHistoryMaxRecords = routingHistoryMaxRecords.toIntOrNull() ?: 100,
+                                fakeDnsExcludeMode = fakeDnsExcludeMode,
+                                fakeDnsExcludeDomains = fakeDnsExcludeDomains
                             )
                             viewModel.updateConfig(newConfig)
                             onNavigateBack()
@@ -246,6 +252,56 @@ fun VpnConfigScreen(
                             onCheckedChange = { routingDomainResolve = it }
                         )
                     }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Text(
+                text = stringResource(R.string.fakedns_settings),
+                style = MaterialTheme.typography.titleMedium
+            )
+            
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.fakedns_mode),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = if (fakeDnsExcludeMode) 
+                                    stringResource(R.string.fakedns_whitelist_desc) 
+                                else 
+                                    stringResource(R.string.fakedns_blacklist_desc),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = fakeDnsExcludeMode,
+                            onCheckedChange = { fakeDnsExcludeMode = it }
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    OutlinedTextField(
+                        value = fakeDnsExcludeDomains,
+                        onValueChange = { fakeDnsExcludeDomains = it },
+                        label = { Text(stringResource(R.string.fakedns_domains)) },
+                        placeholder = { Text(stringResource(R.string.fakedns_domains_placeholder)) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
             

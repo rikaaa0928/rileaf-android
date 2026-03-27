@@ -112,14 +112,30 @@ class ConfigManager(private val context: Context) {
             ""
         }
         
+        val dnsServerLine = if (config.vpnConfig.dnsServer.isNotEmpty()) {
+            "dns-server = ${config.vpnConfig.dnsServer}"
+        } else {
+            ""
+        }
+        
+        val fakeDnsExcludeLine = if (config.vpnConfig.fakeDnsExcludeDomains.isNotEmpty()) {
+            if (config.vpnConfig.fakeDnsExcludeMode) {
+                "always-fake-ip = ${config.vpnConfig.fakeDnsExcludeDomains}"
+            } else {
+                "always-real-ip = ${config.vpnConfig.fakeDnsExcludeDomains}"
+            }
+        } else {
+            ""
+        }
+        
         return """
             [General]
             loglevel = ${config.vpnConfig.logLevel}
             logoutput = console
-            dns-server = ${config.vpnConfig.dnsServer}
+            $dnsServerLine
             routing-domain-resolve = $routingDomainResolveStr
             tun-fd = $tunFd
-            always-real-ip = 
+            $fakeDnsExcludeLine
             $inletsConfig
             
             [Proxy]
