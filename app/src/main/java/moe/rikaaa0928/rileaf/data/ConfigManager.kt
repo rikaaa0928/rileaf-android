@@ -119,6 +119,7 @@ class ConfigManager(private val context: Context) {
             dns-server = ${config.vpnConfig.dnsServer}
             routing-domain-resolve = $routingDomainResolveStr
             tun-fd = $tunFd
+            always-real-ip = 
             $inletsConfig
             
             [Proxy]
