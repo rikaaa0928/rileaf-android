@@ -21,7 +21,9 @@ data class VpnConfig(
     val sessionName: String = "Rileaf VPN",
     val logLevel: String = "error",
     val bypassLan: Boolean = true,
-    val routingDomainResolve: Boolean = true
+    val routingDomainResolve: Boolean = true,
+    val routingHistoryEnabled: Boolean = false,
+    val routingHistoryMaxRecords: Int = 100
 )
 
 @Serializable

@@ -90,7 +90,8 @@ class MainActivity : ComponentActivity() {
                             onNavigateToVpnConfig = { navController.navigate("vpn_config") },
                             onNavigateToAppFilter = { navController.navigate("app_filter") },
                             onNavigateToInletConfig = { navController.navigate("inlet_config") },
-                            onNavigateToAppSettings = { navController.navigate("app_settings") }
+                            onNavigateToAppSettings = { navController.navigate("app_settings") },
+                            onNavigateToRoutingHistory = { navController.navigate("routing_history") }
                         )
                     }
                     
@@ -105,6 +106,13 @@ class MainActivity : ComponentActivity() {
                     composable("vpn_config") {
                         VpnConfigScreen(
                             configManager = configManager,
+                            onNavigateBack = { navController.popBackStack() },
+                            onNavigateToRoutingHistory = { navController.navigate("routing_history") }
+                        )
+                    }
+                    
+                    composable("routing_history") {
+                        RoutingHistoryScreen(
                             onNavigateBack = { navController.popBackStack() }
                         )
                     }

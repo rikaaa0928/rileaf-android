@@ -41,7 +41,8 @@ class VpnConfigViewModel(private val configManager: ConfigManager) : ViewModel()
 @Composable
 fun VpnConfigScreen(
     configManager: ConfigManager,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToRoutingHistory: () -> Unit
 ) {
     val viewModel: VpnConfigViewModel = viewModel { VpnConfigViewModel(configManager) }
     val vpnConfig by viewModel.vpnConfig
@@ -53,6 +54,8 @@ fun VpnConfigScreen(
     var logLevel by remember { mutableStateOf("") }
     var bypassLan by remember { mutableStateOf(true) }
     var routingDomainResolve by remember { mutableStateOf(true) }
+    var routingHistoryEnabled by remember { mutableStateOf(false) }
+    var routingHistoryMaxRecords by remember { mutableStateOf("100") }
     
     // 同步状态
     LaunchedEffect(vpnConfig) {
@@ -63,6 +66,8 @@ fun VpnConfigScreen(
         logLevel = vpnConfig.logLevel
         bypassLan = vpnConfig.bypassLan
         routingDomainResolve = vpnConfig.routingDomainResolve
+        routingHistoryEnabled = vpnConfig.routingHistoryEnabled
+        routingHistoryMaxRecords = vpnConfig.routingHistoryMaxRecords.toString()
     }
     
     val logLevelOptions = listOf("error", "warn", "info", "debug", "trace")
@@ -87,7 +92,9 @@ fun VpnConfigScreen(
                                 sessionName = sessionName,
                                 logLevel = logLevel,
                                 bypassLan = bypassLan,
-                                routingDomainResolve = routingDomainResolve
+                                routingDomainResolve = routingDomainResolve,
+                                routingHistoryEnabled = routingHistoryEnabled,
+                                routingHistoryMaxRecords = routingHistoryMaxRecords.toIntOrNull() ?: 100
                             )
                             viewModel.updateConfig(newConfig)
                             onNavigateBack()
@@ -238,6 +245,66 @@ fun VpnConfigScreen(
                             checked = routingDomainResolve,
                             onCheckedChange = { routingDomainResolve = it }
                         )
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Text(
+                text = stringResource(R.string.routing_history),
+                style = MaterialTheme.typography.titleMedium
+            )
+            
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.routing_history_enabled),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = stringResource(R.string.routing_history_desc),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = routingHistoryEnabled,
+                            onCheckedChange = { routingHistoryEnabled = it }
+                        )
+                    }
+                    
+                    if (routingHistoryEnabled) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        OutlinedTextField(
+                            value = routingHistoryMaxRecords,
+                            onValueChange = { routingHistoryMaxRecords = it },
+                            label = { Text(stringResource(R.string.routing_history_max_records)) },
+                            modifier = Modifier.fillMaxWidth(),
+                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                                keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
+                            )
+                        )
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Button(
+                            onClick = onNavigateToRoutingHistory,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(stringResource(R.string.view_routing_history))
+                        }
                     }
                 }
             }

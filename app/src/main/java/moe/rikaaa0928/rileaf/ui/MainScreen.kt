@@ -54,7 +54,8 @@ fun MainScreen(
     onNavigateToVpnConfig: () -> Unit,
     onNavigateToAppFilter: () -> Unit,
     onNavigateToInletConfig: () -> Unit,
-    onNavigateToAppSettings: () -> Unit
+    onNavigateToAppSettings: () -> Unit,
+    onNavigateToRoutingHistory: () -> Unit
 ) {
     val viewModel: MainViewModel = viewModel { MainViewModel(configManager) }
     val vpnStatusInfo by statusManager.statusFlow.collectAsState()
@@ -273,6 +274,17 @@ fun MainScreen(
                 icon = Icons.Default.Settings,
                 onClick = onNavigateToAppSettings
             )
+
+            // 路由记录
+            val vpnConfig = configManager.getConfig().vpnConfig
+            if (vpnConfig.routingHistoryEnabled) {
+                ConfigOptionCard(
+                    title = stringResource(R.string.routing_history),
+                    description = stringResource(R.string.routing_history_desc),
+                    icon = Icons.Default.List,
+                    onClick = onNavigateToRoutingHistory
+                )
+            }
         }
     }
 }

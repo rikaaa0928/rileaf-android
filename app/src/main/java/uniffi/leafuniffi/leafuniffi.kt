@@ -728,16 +728,16 @@ internal interface UniffiForeignFutureCompleteVoid : com.sun.jna.Callback {
 
 
 // For large crates we prevent `MethodTooLargeException` (see #2340)
-// N.B. the name of the extension is very misleading, since it is
-// rather `InterfaceTooLargeException`, caused by too many methods
+// N.B. the name of the extension is very misleading, since it is 
+// rather `InterfaceTooLargeException`, caused by too many methods 
 // in the interface for large crates.
 //
 // By splitting the otherwise huge interface into two parts
-// * UniffiLib
+// * UniffiLib 
 // * IntegrityCheckingUniffiLib (this)
 // we allow for ~2x as many methods in the UniffiLib interface.
-//
-// The `ffi_uniffi_contract_version` method and all checksum methods are put
+// 
+// The `ffi_uniffi_contract_version` method and all checksum methods are put 
 // into `IntegrityCheckingUniffiLib` and these methods are called only once,
 // when the library is loaded.
 internal interface IntegrityCheckingUniffiLib : Library {
@@ -770,8 +770,8 @@ internal interface UniffiLib : Library {
         internal val INSTANCE: UniffiLib by lazy {
             val componentName = "leafuniffi"
             // For large crates we prevent `MethodTooLargeException` (see #2340)
-            // N.B. the name of the extension is very misleading, since it is
-            // rather `InterfaceTooLargeException`, caused by too many methods
+            // N.B. the name of the extension is very misleading, since it is 
+            // rather `InterfaceTooLargeException`, caused by too many methods 
             // in the interface for large crates.
             //
             // By splitting the otherwise huge interface into two parts
@@ -779,7 +779,7 @@ internal interface UniffiLib : Library {
             // * IntegrityCheckingUniffiLib
             // And all checksum methods are put into `IntegrityCheckingUniffiLib`
             // we allow for ~2x as many methods in the UniffiLib interface.
-            //
+            // 
             // Thus we first load the library with `loadIndirect` as `IntegrityCheckingUniffiLib`
             // so that we can (optionally!) call `uniffiCheckApiChecksums`...
             loadIndirect<IntegrityCheckingUniffiLib>(componentName)
@@ -794,7 +794,7 @@ internal interface UniffiLib : Library {
             // to trigger this issue, the performance impact is negligible, running on
             // a macOS M1 machine the `loadIndirect` call takes ~50ms.
             val lib = loadIndirect<UniffiLib>(componentName)
-            // No need to check the contract version and checksums, since
+            // No need to check the contract version and checksums, since 
             // we already did that with `IntegrityCheckingUniffiLib` above.
             // Loading of library with integrity check done.
             lib
@@ -809,7 +809,7 @@ internal interface UniffiLib : Library {
     ): RustBuffer.ByValue
     fun uniffi_leafuniffi_fn_func_leaf_run(`rtId`: Short,`configPath`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
     ): RustBuffer.ByValue
-    fun uniffi_leafuniffi_fn_func_leaf_run_with_config_string(`rtId`: Short,`config`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+    fun uniffi_leafuniffi_fn_func_leaf_run_with_config_string(`rtId`: Short,`config`: RustBuffer.ByValue,`routingHistoryEnabled`: Byte,`routingHistoryMaxRecords`: Int,uniffi_out_err: UniffiRustCallStatus,
     ): RustBuffer.ByValue
     fun uniffi_leafuniffi_fn_func_leaf_run_with_options(`rtId`: Short,`configPath`: RustBuffer.ByValue,`autoReload`: Byte,`multiThread`: Byte,`autoThreads`: Byte,`threads`: Int,`stackSize`: Int,uniffi_out_err: UniffiRustCallStatus,
     ): RustBuffer.ByValue
@@ -954,7 +954,7 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_leafuniffi_checksum_func_leaf_run() != 3352.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_leafuniffi_checksum_func_leaf_run_with_config_string() != 36180.toShort()) {
+    if (lib.uniffi_leafuniffi_checksum_func_leaf_run_with_config_string() != 47957.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_leafuniffi_checksum_func_leaf_run_with_options() != 54568.toShort()) {
@@ -1376,11 +1376,11 @@ public object FfiConverterSequenceTypeRoutingRecord: FfiConverterRustBuffer<List
     )
 }
 
-fun `leafRunWithConfigString`(`rtId`: kotlin.UShort, `config`: kotlin.String): ErrEnum {
+fun `leafRunWithConfigString`(`rtId`: kotlin.UShort, `config`: kotlin.String, `routingHistoryEnabled`: kotlin.Boolean, `routingHistoryMaxRecords`: kotlin.UInt): ErrEnum {
     return FfiConverterTypeErrEnum.lift(
         uniffiRustCall() { _status ->
             UniffiLib.INSTANCE.uniffi_leafuniffi_fn_func_leaf_run_with_config_string(
-                FfiConverterUShort.lower(`rtId`),FfiConverterString.lower(`config`),_status)
+                FfiConverterUShort.lower(`rtId`),FfiConverterString.lower(`config`),FfiConverterBoolean.lower(`routingHistoryEnabled`),FfiConverterUInt.lower(`routingHistoryMaxRecords`),_status)
         }
     )
 }

@@ -225,10 +225,12 @@ class LeafVpnService : VpnService() {
             // Update status to connected before starting Rust service
             // since leafRunWithConfigString is a blocking call that runs until VPN stops
             statusManager.updateStatus(VpnStatus.CONNECTED, "VPN connected and running")
-            Log.i("LeafVpnService", "Rust service starting...")
-            
+            // Pass routing history settings along with config
+            val vpnConfig = configManager.getConfig().vpnConfig
+            Log.i("LeafVpnService", "Routing history enabled: ${vpnConfig.routingHistoryEnabled}, max records: ${vpnConfig.routingHistoryMaxRecords}")
+
             // This call blocks until the VPN is shut down
-            val result = leafRunWithConfigString(rtId, configContent)
+            val result = leafRunWithConfigString(rtId, configContent, vpnConfig.routingHistoryEnabled, vpnConfig.routingHistoryMaxRecords.toUInt())
             
             // This will only be reached when VPN is disconnected
             Log.i("LeafVpnService", "Rust service stopped with result: $result")

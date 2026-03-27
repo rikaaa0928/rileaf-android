@@ -108,4 +108,19 @@
     <string name="language_system">跟随系统</string>
     <string name="current_language">当前语言</string>
     <string name="restart_required">重启应用后生效</string>
+
+    <!-- 路由记录 -->
+    <string name="routing_history">路由记录</string>
+    <string name="routing_history_enabled">开启路由记录</string>
+    <string name="routing_history_max_records">保存条数</string>
+    <string name="view_routing_history">查看记录</string>
+    <string name="refresh_history">刷新</string>
+    <string name="no_history">暂无路由记录</string>
+    <string name="routing_history_desc">保存已路由连接的信息，用于调试</string>
+    <string name="network">网络</string>
+    <string name="source">源</string>
+    <string name="destination">目的地</string>
+    <string name="inbound">入站</string>
+    <string name="outbound">出站</string>
+    <string name="timestamp">时间</string>
 </resources>

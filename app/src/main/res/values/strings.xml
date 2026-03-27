@@ -108,4 +108,19 @@
     <string name="language_system">Follow System</string>
     <string name="current_language">Current Language</string>
     <string name="restart_required">Takes effect after app restart</string>
+
+    <!-- Routing History -->
+    <string name="routing_history">Routing History</string>
+    <string name="routing_history_enabled">Enable Routing History</string>
+    <string name="routing_history_max_records">Max Records</string>
+    <string name="view_routing_history">View History</string>
+    <string name="refresh_history">Refresh</string>
+    <string name="no_history">No routing history yet</string>
+    <string name="routing_history_desc">Save information of routed connections for debugging</string>
+    <string name="network">Network</string>
+    <string name="source">Source</string>
+    <string name="destination">Destination</string>
+    <string name="inbound">Inbound</string>
+    <string name="outbound">Outbound</string>
+    <string name="timestamp">Time</string>
 </resources>
