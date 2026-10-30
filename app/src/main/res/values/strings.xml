@@ -73,6 +73,16 @@
     <string name="server_address">Server Address</string>
     <string name="port">Port</string>
     <string name="password">Password</string>
+    <string name="rog_transport_options">ROG Transport Options</string>
+    <string name="custom_connector">Custom Connector</string>
+    <string name="custom_connector_desc">Use Leaf DNS and TCP dialing for the ROG connection</string>
+    <string name="keep_alive">Keep Alive</string>
+    <string name="keep_alive_desc">Detect broken active ROG connections faster</string>
+    <string name="keep_alive_interval_secs">Keep Alive Interval (seconds)</string>
+    <string name="keep_alive_timeout_secs">Keep Alive Timeout (seconds)</string>
+    <string name="keep_alive_while_idle">Keep Alive While Idle</string>
+    <string name="keep_alive_while_idle_desc">Off is recommended on mobile to reduce background wakeups</string>
+    <string name="positive_number_required">Must be a positive number</string>
     <string name="edit_proxy">Edit Proxy</string>
     <string name="name_cannot_empty">Name cannot be empty</string>
     <string name="server_cannot_empty">Server address cannot be empty</string>

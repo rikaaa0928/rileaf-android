@@ -10,6 +10,11 @@ data class ProxyConfig(
     val server: String,
     val port: Int,
     val password: String? = null,
+    val customConnector: Boolean = true,
+    val keepAlive: Boolean = true,
+    val keepAliveIntervalSecs: Int = 30,
+    val keepAliveTimeoutSecs: Int = 20,
+    val keepAliveWhileIdle: Boolean = false,
     val isEnabled: Boolean = true
 )
 

@@ -3,6 +3,8 @@ package moe.rikaaa0928.rileaf.ui
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -16,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import moe.rikaaa0928.rileaf.R
 import androidx.lifecycle.ViewModel
@@ -264,19 +267,40 @@ fun ProxyEditDialog(
     var server by remember { mutableStateOf(proxy?.server ?: "") }
     var port by remember { mutableStateOf(proxy?.port?.toString() ?: "443") }
     var password by remember { mutableStateOf(proxy?.password ?: "") }
+    var customConnector by remember { mutableStateOf(proxy?.customConnector ?: true) }
+    var keepAlive by remember { mutableStateOf(proxy?.keepAlive ?: true) }
+    var keepAliveIntervalSecs by remember {
+        mutableStateOf((proxy?.keepAliveIntervalSecs ?: 30).toString())
+    }
+    var keepAliveTimeoutSecs by remember {
+        mutableStateOf((proxy?.keepAliveTimeoutSecs ?: 20).toString())
+    }
+    var keepAliveWhileIdle by remember { mutableStateOf(proxy?.keepAliveWhileIdle ?: false) }
 
     var isNameError by remember { mutableStateOf(false) }
     var isServerError by remember { mutableStateOf(false) }
     var isPortError by remember { mutableStateOf(false) }
+    var isKeepAliveIntervalError by remember { mutableStateOf(false) }
+    var isKeepAliveTimeoutError by remember { mutableStateOf(false) }
+
+    val isRogFamily = type == "rog" || type == "rog-h3"
 
     fun validate(): Boolean {
         isNameError = name.isBlank()
         isServerError = server.isBlank()
         isPortError = port.toIntOrNull() == null
-        return !isNameError && !isServerError && !isPortError
+        isKeepAliveIntervalError = isRogFamily && keepAlive &&
+            ((keepAliveIntervalSecs.toIntOrNull() ?: 0) <= 0)
+        isKeepAliveTimeoutError = isRogFamily && keepAlive &&
+            ((keepAliveTimeoutSecs.toIntOrNull() ?: 0) <= 0)
+        return !isNameError &&
+            !isServerError &&
+            !isPortError &&
+            !isKeepAliveIntervalError &&
+            !isKeepAliveTimeoutError
     }
 
-    val typeOptions = listOf("rog", "socks5", "http")
+    val typeOptions = listOf("rog", "rog-h3", "socks5", "http")
     var expandedType by remember { mutableStateOf(false) }
 
     AlertDialog(
@@ -284,6 +308,7 @@ fun ProxyEditDialog(
         title = { Text(stringResource(if (proxy == null) R.string.add_proxy else R.string.edit_proxy)) },
         text = {
             Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 OutlinedTextField(
@@ -319,6 +344,10 @@ fun ProxyEditDialog(
                             DropdownMenuItem(
                                 text = { Text(option.uppercase()) },
                                 onClick = {
+                                    if (type != option && option == "rog-h3") {
+                                        keepAlive = false
+                                        keepAliveTimeoutSecs = "45"
+                                    }
                                     type = option
                                     expandedType = false
                                 }
@@ -351,13 +380,117 @@ fun ProxyEditDialog(
                     supportingText = { if (isPortError) Text(stringResource(R.string.port_invalid)) }
                 )
 
-                if (type == "rog") {
+                if (isRogFamily) {
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
                         label = { Text(stringResource(R.string.password)) },
                         modifier = Modifier.fillMaxWidth()
                     )
+
+                    Text(
+                        text = stringResource(R.string.rog_transport_options),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(stringResource(R.string.custom_connector))
+                            Text(
+                                text = stringResource(R.string.custom_connector_desc),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = customConnector,
+                            onCheckedChange = { customConnector = it }
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(stringResource(R.string.keep_alive))
+                            Text(
+                                text = stringResource(R.string.keep_alive_desc),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = keepAlive,
+                            onCheckedChange = { keepAlive = it }
+                        )
+                    }
+
+                    if (keepAlive) {
+                        OutlinedTextField(
+                            value = keepAliveIntervalSecs,
+                            onValueChange = {
+                                keepAliveIntervalSecs = it
+                                isKeepAliveIntervalError = false
+                            },
+                            label = { Text(stringResource(R.string.keep_alive_interval_secs)) },
+                            modifier = Modifier.fillMaxWidth(),
+                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                                keyboardType = KeyboardType.Number
+                            ),
+                            isError = isKeepAliveIntervalError,
+                            supportingText = {
+                                if (isKeepAliveIntervalError) {
+                                    Text(stringResource(R.string.positive_number_required))
+                                }
+                            }
+                        )
+
+                        OutlinedTextField(
+                            value = keepAliveTimeoutSecs,
+                            onValueChange = {
+                                keepAliveTimeoutSecs = it
+                                isKeepAliveTimeoutError = false
+                            },
+                            label = { Text(stringResource(R.string.keep_alive_timeout_secs)) },
+                            modifier = Modifier.fillMaxWidth(),
+                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                                keyboardType = KeyboardType.Number
+                            ),
+                            isError = isKeepAliveTimeoutError,
+                            supportingText = {
+                                if (isKeepAliveTimeoutError) {
+                                    Text(stringResource(R.string.positive_number_required))
+                                }
+                            }
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(stringResource(R.string.keep_alive_while_idle))
+                                Text(
+                                    text = stringResource(R.string.keep_alive_while_idle_desc),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Switch(
+                                checked = keepAliveWhileIdle,
+                                onCheckedChange = { keepAliveWhileIdle = it }
+                            )
+                        }
+                    }
                 }
             }
         },
@@ -371,7 +504,12 @@ fun ProxyEditDialog(
                             type = type,
                             server = server,
                             port = port.toInt(),
-                            password = if (type == "rog") password else null
+                            password = if (isRogFamily) password else null,
+                            customConnector = customConnector,
+                            keepAlive = keepAlive,
+                            keepAliveIntervalSecs = keepAliveIntervalSecs.toIntOrNull() ?: 30,
+                            keepAliveTimeoutSecs = keepAliveTimeoutSecs.toIntOrNull() ?: 20,
+                            keepAliveWhileIdle = keepAliveWhileIdle
                         )
                         onSave(newProxy)
                     }

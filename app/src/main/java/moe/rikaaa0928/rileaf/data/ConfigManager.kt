@@ -84,8 +84,18 @@ class ConfigManager(private val context: Context) {
             ?: config.proxies.firstOrNull()
             ?: return ""
         
-        val proxyLine = when (selectedProxy.type.lowercase()) {
-            "rog" -> "${selectedProxy.name} = rog, ${selectedProxy.server}, ${selectedProxy.port}, password=${selectedProxy.password}"
+        val proxyLine = when (val proto = selectedProxy.type.lowercase()) {
+            "rog", "rog-h3" -> {
+                val options = listOf(
+                    "password=${selectedProxy.password.orEmpty()}",
+                    "custom-connector=${selectedProxy.customConnector}",
+                    "keep-alive=${selectedProxy.keepAlive}",
+                    "keep-alive-interval-secs=${selectedProxy.keepAliveIntervalSecs}",
+                    "keep-alive-timeout-secs=${selectedProxy.keepAliveTimeoutSecs}",
+                    "keep-alive-while-idle=${selectedProxy.keepAliveWhileIdle}"
+                ).joinToString(", ")
+                "${selectedProxy.name} = $proto, ${selectedProxy.server}, ${selectedProxy.port}, $options"
+            }
             "socks5" -> "${selectedProxy.name} = socks, ${selectedProxy.server}, ${selectedProxy.port}"
             else -> "${selectedProxy.name} = ${selectedProxy.type}, ${selectedProxy.server}, ${selectedProxy.port}"
         }

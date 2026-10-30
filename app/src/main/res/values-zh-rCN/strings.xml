@@ -73,6 +73,16 @@
     <string name="server_address">服务器地址</string>
     <string name="port">端口</string>
     <string name="password">密码</string>
+    <string name="rog_transport_options">ROG 传输选项</string>
+    <string name="custom_connector">自定义连接器</string>
+    <string name="custom_connector_desc">使用 Leaf 的 DNS 和 TCP 拨号建立 ROG 连接</string>
+    <string name="keep_alive">Keep Alive</string>
+    <string name="keep_alive_desc">更快发现活跃 ROG 连接断开</string>
+    <string name="keep_alive_interval_secs">Keep Alive 间隔（秒）</string>
+    <string name="keep_alive_timeout_secs">Keep Alive 超时（秒）</string>
+    <string name="keep_alive_while_idle">空闲时 Keep Alive</string>
+    <string name="keep_alive_while_idle_desc">移动端建议关闭，减少后台唤醒</string>
+    <string name="positive_number_required">必须是正整数</string>
     <string name="edit_proxy">编辑代理</string>
     <string name="name_cannot_empty">名称不能为空</string>
     <string name="server_cannot_empty">服务器地址不能为空</string>
